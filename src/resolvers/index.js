@@ -1,5 +1,5 @@
-const accounts= require ('../dataset/index').accounts;
 const { GraphQLScalarType, Kind } = require('graphql');
+const db = require('../db/db')
 
 const resolverMap = {
   Date: new GraphQLScalarType({
@@ -24,17 +24,20 @@ exports.resolvers = {
     Date: resolverMap,
 
     Query: {
-        accounts: () => accounts,
-        account : (address) => {
-          return accounts.find(account => account?.address === address)
+        accounts: () => {
+          return db.select('*').from('accounts');
+        },
+        account : (_, {address}) => {
+          return db.select('*').from('accounts').where({address:address}).first();
         }
     },
 
     Mutation : {
         createAccount: (parent, args) => {
-            const newAccount = args;
-            accounts.push(newAccount);
-            return newAccount;
+            //const newAccount = args;
+            //accounts.push(newAccount);
+            //return newAccount;
+            return;
         }
     }
   };

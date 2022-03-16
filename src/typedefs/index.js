@@ -8,10 +8,11 @@ exports.typeDefs = gql`
   scalar Date
 
   type Account {
+    id: ID
     address: String
-    timestamp: Date
-    whitelisted: Boolean
-    whitelistRequested: Boolean 
+    whitelist_status_id: Int 
+    created_at: Date
+    updated_at: Date
   }
 
   # The "Query" type is special: it lists all of the available queries that
