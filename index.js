@@ -1,28 +1,11 @@
-const { ApolloServer, gql } = require('apollo-server');
-const { resolvers} = require('./src/resolvers/index')
-
+const { ApolloServer} = require('apollo-server');
+const { resolvers} = require('./src/resolvers/index');
+const { typeDefs } = require('./src/typedefs/index');
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
 // your data.
-const typeDefs = gql`
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Accounts {
-    address: String
-    timestamp: String
-    whitelisted: Boolean
-    whitelist_requested: Boolean 
-  }
-
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
-  type Query {
-    accounts: [Accounts]
-  }
-`;
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
