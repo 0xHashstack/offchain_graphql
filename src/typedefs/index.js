@@ -24,6 +24,6 @@ exports.typeDefs = gql`
   }
 
   type Mutation {
-    createAccount(address: String!, timestamp: Date!, whitelisted: Boolean!, whitelistRequested: Boolean!): Account!
+    createAccount(address: String!, whitelist_status_id: Int!,created_at: Date!,updated_at: Date!): Account!
   }
 `;
