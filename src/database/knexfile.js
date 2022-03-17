@@ -6,7 +6,7 @@
 module.exports = {
   
   main: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.PG_DB_HOST,
       database: process.env.PG_DB_NAME,
