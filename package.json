@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "knex":"./node_modules/.bin/knex --knexfile src/db/knexfile.js",
+    "make-migration":"npm run knex migrate:latest --knexfile src/db/knexfile.js"
   },
   "author": "Nikola_Shrutika",
   "license": "ISC",
