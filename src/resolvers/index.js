@@ -41,11 +41,16 @@ exports.resolvers = {
 
     Mutation : {
         addAccount : async (parent, args) => {
-          const id = uuid.v4()
-          const whitelist_status_id = 2 
-          const account = { id, whitelist_status_id, ...args }
-          await db.from('accounts').insert(account)
-          return account
+          const accountDetails = {
+            id: uuid.v4(),
+            address: args.address,
+            whitelist_status_id: 2,
+            user_role: "USER",
+            created_at: new Date(),
+            updated_at: new Date()
+          }
+          await db.from('accounts').insert(accountDetails)
+          return accountDetails
         },
         addDeposit : async (parent, args) => {
           const accountId = args.account_id;
