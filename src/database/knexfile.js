@@ -1,12 +1,11 @@
-require('dotenv').config();
+require('dotenv').config({path: '../../.env'});
 // Update with your config settings.
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
 */
 module.exports = {
-  
-  main: {
+  development:{
     client: 'pg',
     connection: {
       host: process.env.PG_DB_HOST,
