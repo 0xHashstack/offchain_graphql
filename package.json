@@ -6,17 +6,22 @@
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "postinstall": "npm i -g pm2",
-    "prestart": "env-cmd ./node_modules/.bin/knex migrate:latest --env development --knexfile src/database/knexfile.js",
+    "prestart": "./node_modules/env-cmd/bin/env-cmd.js ./node_modules/.bin/knex migrate:latest --env development --knexfile src/database/knexfile.js",
     "start": "pm2 reload ecosystem.config.js",
     "poststart": "pm2 logs",
     "knex": "./node_modules/.bin/knex --knexfile src/database/knexfile.js",
     "make-migration": "npm run knex migrate:latest --knexfile src/database/knexfile.js"
   },
   "author": "Nikola_Shrutika",
-  "license": "ISC",
+  "license": "BSD-2-Clause",
+  "engines": {
+    "node": ">= 14.0.0",
+    "npm": ">= 5.0.0"
+  },
   "dependencies": {
     "apollo-server": "^3.6.4",
     "dotenv": "^16.0.0",
+    "env-cmd": "^10.1.0",
     "express": "^4.17.3",
     "express-graphql": "^0.12.0",
     "graphql": "^15.8.0",
