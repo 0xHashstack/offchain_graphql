@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "postinstall": "npm i -g pm2",
-    "prestart": "./node_modules/env-cmd/bin/env-cmd.js ./node_modules/.bin/knex migrate:latest --env development --knexfile src/database/knexfile.js",
+    "prestart": "./node_modules/.bin/knex migrate:latest --env development --knexfile src/database/knexfile.js",
     "start": "pm2 reload ecosystem.config.js",
     "poststart": "pm2 logs",
     "knex": "./node_modules/.bin/knex --knexfile src/database/knexfile.js",
