@@ -43,7 +43,6 @@ exports.resolvers = {
         addAccount : async (parent, args) => {
           const id = uuid.v4()
           const whitelist_status_id = 2 
-          console.log(args)
           const account = { id, whitelist_status_id, ...args }
           await db.from('accounts').insert(account)
           return account
@@ -55,7 +54,7 @@ exports.resolvers = {
           const depositAmount = args.amount;
           //find the deposit-id, if deposit already exist
           const existingDeposit = await db.select('*').from('deposits').where({account_id:accountId ,commitment:depositCommitment, market:depositMarket}).first();
-          console.log(existingDeposit)
+          
           //If deposit already exists
           if(existingDeposit){
             current_net_amount = existingDeposit.net_amount
@@ -108,9 +107,7 @@ exports.resolvers = {
             created_at: new Date(),
             updated_at: new Date()
           }
-
           await db.from('loans').insert(loanData)
-
           return loanData
         },
         updateWhitelistStatus : async (parent, args) => {    
