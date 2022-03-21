@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\"",
     "start": "nodemon index.js",
     "knex": "./node_modules/.bin/knex --knexfile src/database/knexfile.js",
     "make-migration": "npm run knex migrate:latest --knexfile src/database/knexfile.js"
