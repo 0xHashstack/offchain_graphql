@@ -55,7 +55,7 @@ exports.typeDefs = gql`
   }
 
   type Mutation {
-    addAccount(address: String!, created_at: Date!, updated_at: Date!): Account!
+    addAccount(address: String!): Account!
 
     addDeposit(account_id: ID!, commitment: String!, market: String!, amount: Float!): Deposit!
 

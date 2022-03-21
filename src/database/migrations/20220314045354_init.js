@@ -18,13 +18,13 @@ exports.up = async function(knex) {
     })
     .createTable('accounts', table => {
         table.uuid('id').primary().notNullable();
-        table.string('address').notNullable();
+        table.string('address').notNullable().unique();
         table
         .integer('whitelist_status_id')
         .notNullable()
         .references('whitelist_status_lookup.whitelist_status_id');
         table.string('user_role');
-        table.timestamps(true,true);
+        table.timestamps(true,true).notNullable();
       })
     .createTable('withdrawals', table => {
         table.uuid('id').primary().notNullable();
@@ -35,7 +35,7 @@ exports.up = async function(knex) {
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamps(true,true);
+        table.timestamps(true,true).notNullable();
     })
     .createTable('deposits', table => {
         table.uuid('id').primary().notNullable();
@@ -47,7 +47,7 @@ exports.up = async function(knex) {
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamps(true,true);
+        table.timestamps(true,true).notNullable();
     })
     .createTable('loans', table => {
         table.uuid('id').primary().notNullable();
@@ -68,7 +68,7 @@ exports.up = async function(knex) {
         table.uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamps(true,true);
+        table.timestamps(true,true).notNullable();
     })
     .createTable('liquidations', table => {
         table.uuid('id').primary().notNullable();
@@ -85,7 +85,7 @@ exports.up = async function(knex) {
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamps(true,true);
+        table.timestamps(true,true).notNullable();
     })
     
 };
