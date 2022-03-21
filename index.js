@@ -8,7 +8,7 @@ const { typeDefs } = require('./src/typedefs/index');
 const server = new ApolloServer({ typeDefs, resolvers });
 
 // The `listen` method launches a web server.
-server.listen().then(({ url }) => {
+server.listen({port: process.env.PORT || 4000}).then(({ url }) => {
   console.log("reso", resolvers)
   console.log(`🚀  Server ready at ${url}`);
 });
