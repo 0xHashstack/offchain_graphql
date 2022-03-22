@@ -24,8 +24,8 @@ exports.up = async function(knex) {
         .notNullable()
         .references('whitelist_status_lookup.whitelist_status_id');
         table.string('user_role');
-        table.timestamp('created_at', { useTz: true });
-        table.timestamp('updated_at', { useTz: true });
+        table.timestamp('created_at', { useTz: true }).notNullable();
+        table.timestamp('updated_at', { useTz: true }).notNullable();
       })
     .createTable('withdrawals', table => {
         table.uuid('id').primary().notNullable();
@@ -36,8 +36,8 @@ exports.up = async function(knex) {
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamp('created_at', { useTz: true });
-        table.timestamp('updated_at', { useTz: true });
+        table.timestamp('created_at', { useTz: true }).notNullable();
+        table.timestamp('updated_at', { useTz: true }).notNullable();
     })
     .createTable('deposits', table => {
         table.uuid('id').primary().notNullable();
@@ -49,8 +49,8 @@ exports.up = async function(knex) {
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamp('created_at', { useTz: true });
-        table.timestamp('updated_at', { useTz: true });
+        table.timestamp('created_at', { useTz: true }).notNullable();
+        table.timestamp('updated_at', { useTz: true }).notNullable();
     })
     .createTable('loans', table => {
         table.uuid('id').primary().notNullable();
@@ -71,8 +71,8 @@ exports.up = async function(knex) {
         table.uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamp('created_at', { useTz: true });
-        table.timestamp('updated_at', { useTz: true });
+        table.timestamp('created_at', { useTz: true }).notNullable();
+        table.timestamp('updated_at', { useTz: true }).notNullable();
     })
     .createTable('liquidations', table => {
         table.uuid('id').primary().notNullable();
@@ -89,8 +89,8 @@ exports.up = async function(knex) {
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamp('created_at', { useTz: true });
-        table.timestamp('updated_at', { useTz: true });
+        table.timestamp('created_at', { useTz: true }).notNullable();
+        table.timestamp('updated_at', { useTz: true }).notNullable();
     })
     
 };
