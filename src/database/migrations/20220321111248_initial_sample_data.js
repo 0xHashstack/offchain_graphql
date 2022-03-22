@@ -3,8 +3,46 @@
  * @returns { Promise<void> }
  */
 exports.up = async function(knex) {
-    const timestamp = Date.now();
-    
+    //insert into whitelist_status_id
+      await knex('whitelist_status_lookup').insert({
+        whitelist_status_id:2,
+        whitelist_status_description:"WHITELIST_NOT_REQUESTED"
+      })
+      await knex('whitelist_status_lookup').insert({
+        whitelist_status_id:10,
+        whitelist_status_description:"WHITELIST_REQUESTED"
+      })
+      await knex('whitelist_status_lookup').insert({
+        whitelist_status_id:18,
+        whitelist_status_description:"WHITELISTED"
+      })
+
+    //insert into whitelist_status_id
+    await knex('loan_status_lookup').insert({
+      loan_status_id:2,
+      loan_status_description:"STATUS_1"
+    })
+    await knex('loan_status_lookup').insert({
+      loan_status_id:10,
+      loan_status_description:"STATUS_2"
+    })
+    await knex('loan_status_lookup').insert({
+      loan_status_id:18,
+      loan_status_description:"STATUS_3"
+    })
+    await knex('loan_status_lookup').insert({
+      loan_status_id:26,
+      loan_status_description:"STATUS_4"
+    })
+    await knex('loan_status_lookup').insert({
+      loan_status_id:34,
+      loan_status_description:"STATUS_5"
+    })
+    await knex('loan_status_lookup').insert({
+      loan_status_id:42,
+      loan_status_description:"STATUS_6"
+    })
+
     // adding dummy data to accounts table
       await knex('accounts').insert({
         id: "f554c8f6-06e6-4386-88b9-59047adb6365",
@@ -17,7 +55,7 @@ exports.up = async function(knex) {
       await knex('accounts').insert({
         id: "a8331bd8-fa9d-49ae-aa1e-da6734514643",
         address: "0x0000000000000000000000DUMMY_2",
-        whitelist_status_id: 8,
+        whitelist_status_id: 10,
         user_role: "DUMMY_USER",
         created_at: new Date(),
         updated_at: new Date()
@@ -82,6 +120,24 @@ exports.up = async function(knex) {
       })
     
       // adding loans entries
+      await knex('loans').insert({
+        id: "16c2ec38-aa8e-4793-bbbb-0d0879cd3eaa",
+        loan_market: "0x555344542e740000000000000000000000000000000000000000000000000000",
+        loan_amount: 300000000000000000000,
+        collateral_market: "0x555344542e740000000000000000000000000000000000000000000000000000",
+        collateral_amount: 200000000000000000000,
+        commitment: "0x636f6d69745f4e4f4e4500000000000000000000000000000000000000000000",
+        cdr: 0.66666,
+        debt_category: 2,
+        current_amount: 300000000000000000000,
+        current_market: "0x555344542e740000000000000000000000000000000000000000000000000000",
+        is_swapped: false,
+        loan_status_id: 2,
+        account_id: "f554c8f6-06e6-4386-88b9-59047adb6365",
+        created_at: new Date(),
+        updated_at: new Date()
+      })
+
 };
 
 /**

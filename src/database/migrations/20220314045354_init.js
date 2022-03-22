@@ -24,41 +24,44 @@ exports.up = async function(knex) {
         .notNullable()
         .references('whitelist_status_lookup.whitelist_status_id');
         table.string('user_role');
-        table.timestamp(true,true).notNullable();
+        table.timestamp('created_at', { useTz: true });
+        table.timestamp('updated_at', { useTz: true });
       })
     .createTable('withdrawals', table => {
         table.uuid('id').primary().notNullable();
         table.string('market').notNullable();
         table.string('commitment').notNullable();
-        table.decimal('amount').notNullable();
+        table.decimal('amount',80,30).notNullable();
         table
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamp(true,true).notNullable();
+        table.timestamp('created_at', { useTz: true });
+        table.timestamp('updated_at', { useTz: true });
     })
     .createTable('deposits', table => {
         table.uuid('id').primary().notNullable();
         table.string('market').notNullable();
         table.string('commitment').notNullable();
-        table.decimal('net_amount').notNullable();
-        table.decimal('net_accrued_yield').notNullable();
+        table.decimal('net_amount',80,30).notNullable();
+        table.decimal('net_accrued_yield',80,30).notNullable();
         table
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamp(true,true).notNullable();
+        table.timestamp('created_at', { useTz: true });
+        table.timestamp('updated_at', { useTz: true });
     })
     .createTable('loans', table => {
         table.uuid('id').primary().notNullable();
         table.string('loan_market').notNullable();
-        table.decimal('loan_amount').notNullable();
+        table.decimal('loan_amount',80,30).notNullable();
         table.string('collateral_market').notNullable();
-        table.decimal('collateral_amount').notNullable();
+        table.decimal('collateral_amount',80,30).notNullable();
         table.string('commitment').notNullable();
-        table.decimal('cdr').notNullable();
+        table.decimal('cdr',80,30).notNullable();
         table.integer('debt_category').notNullable();
-        table.decimal('current_amount').notNullable();
+        table.decimal('current_amount',80,30).notNullable();
         table.string('current_market').notNullable();
         table.boolean('is_swapped').notNullable();
         table
@@ -68,7 +71,8 @@ exports.up = async function(knex) {
         table.uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamp(true,true).notNullable();
+        table.timestamp('created_at', { useTz: true });
+        table.timestamp('updated_at', { useTz: true });
     })
     .createTable('liquidations', table => {
         table.uuid('id').primary().notNullable();
@@ -85,7 +89,8 @@ exports.up = async function(knex) {
         .uuid('account_id')
         .notNullable()
         .references('accounts.id');
-        table.timestamp(true,true).notNullable();
+        table.timestamp('created_at', { useTz: true });
+        table.timestamp('updated_at', { useTz: true });
     })
     
 };
