@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
+    "test": "jest",
     "postinstall": "npm i -g pm2",
     "prestart": "./node_modules/.bin/knex migrate:latest --env development --knexfile src/database/knexfile.js",
     "start": "pm2 reload ecosystem.config.js",
@@ -20,7 +20,8 @@
     "npm": ">= 5.0.0"
   },
   "dependencies": {
-    "apollo-server": "^3.6.4",
+    "apollo-server": "^3.6.5",
+    "babel-preset-env": "^1.7.0",
     "dotenv": "^16.0.0",
     "env-cmd": "^10.1.0",
     "express": "^4.17.3",
@@ -30,6 +31,12 @@
     "nodemon": "^2.0.15",
     "pg": "^8.7.3",
     "pm2": "^5.2.0",
+    "request": "^2.88.2",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.11",
+    "jest": "^27.5.1",
+    "supertest": "^6.2.2"
   }
 }

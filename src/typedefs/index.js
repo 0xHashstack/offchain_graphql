@@ -53,6 +53,7 @@ exports.typeDefs = gql`
     getAccountDetailsByAddress(address: String!): Account
     getAllDepositByAccountId(account_id: ID!): [Deposit]
     getAllLoanByAccountId(account_id: ID!): [Loan]
+    hello(name: String): String!
   }
 
   type Mutation {
