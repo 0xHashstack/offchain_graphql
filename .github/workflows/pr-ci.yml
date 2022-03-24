@@ -27,10 +27,10 @@ jobs:
       env:
         CI: true
     
-    # - name: Report coverage to codecov
-    #   uses: codecov/codecov-action@@v1
-    #   with:
-    #     token: ${{ secrets.CODECOV_TOKEN }}
-    #     files: ./coverage.xml
-    #     directory: ./coverage/reports/
-    #     fail_ci_if_error: true
+    - name: Report coverage to codecov
+      uses: codecov/codecov-action@@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.xml
+        directory: ./coverage/reports/
+        fail_ci_if_error: true
