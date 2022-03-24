@@ -1,5 +1,5 @@
 import { graphql } from "graphql";
-import { makeExecutableSchema } from "graphql-tools";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import { typeDefs } from "../typedefs/index";
 import { resolvers } from "../resolvers/index";
 
