@@ -58,19 +58,18 @@ describe('e2e test', () => {
     it('says hello', async () => {
       // send our request to the url of the test server
       const response = await request(url).post('/').send(queryHelloData);
-      console.log(response)
       expect(response.errors).toBeUndefined();
       expect(response.body.data?.hello).toBe('Hello test!');
     });
 
 
-    it('getAccountDetailsByAddress', async () => {
-        // send our request to the url of the test server
-        const response = await request(url).post('/').send(querygetAccountDetailsByAddressData);
-        console.log(response)
-        expect(response.errors).toBeUndefined();
-        expect(response.body.data?.hello).toBe( `{
-            \"id\": \"a731640c-5b22-496b-86fc-85e630b2155a\"
-          }`);
-      });
+    // it('getAccountDetailsByAddress', async () => {
+    //     // send our request to the url of the test server
+    //     const response = await request(url).post('/').send(querygetAccountDetailsByAddressData);
+    //     //console.log(response)
+    //     expect(response.errors).toBeUndefined();
+    //     expect(response.body.data?.hello).toBe( `{
+    //         \"id\": \"a731640c-5b22-496b-86fc-85e630b2155a\"
+    //       }`);
+    //   });
   });
