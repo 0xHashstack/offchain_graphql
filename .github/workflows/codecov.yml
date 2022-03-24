@@ -21,8 +21,17 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
+
     - name: Install dependencies
       run: npm install
 
     - name: Run the tests
       run: npm test -- --coverage
+
+    - name: Report coverage to codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ./coverage/reports/
+        files: ./coverage.xml
+        fail_ci_if_error: true
