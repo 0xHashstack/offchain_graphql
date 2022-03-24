@@ -23,7 +23,7 @@ jobs:
       run: |
         npm install
         npm run test
-        npm test -- --coverage && ./codecov -t 7c22c138-5312-43a7-87f4-e0be2ee7ee29  
+        # npm test -- --coverage && ./codecov -t 7c22c138-5312-43a7-87f4-e0be2ee7ee29  
       env:
         CI: true
     
