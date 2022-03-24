@@ -37,7 +37,6 @@ exports.resolvers = {
         getAllLoanByAccountId : (_, {account_id}) => {
           return db.select('*').from('loans').where({account_id:account_id});
         },
-        hello: (_, { name }) => `Hello ${name}!`,
     },
 
     Mutation : {
