@@ -33,6 +33,7 @@
     "graphql": "^15.8.0",
     "graphql-middleware": "^6.1.21",
     "jsonwebtoken": "^8.5.1",
+    "graphql-tools": "^8.2.3",
     "knex": "^1.0.4",
     "nodemon": "^2.0.15",
     "pg": "^8.7.3",
