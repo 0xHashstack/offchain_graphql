@@ -2,7 +2,6 @@ const { ApolloServer } = require('apollo-server');
 const { resolvers } = require('./src/resolvers/index');
 const { typeDefs } = require('./src/typedefs/index');
 const logger = require("./src/utils/logger")
-const { print } = require('graphql');
 
 require('dotenv').config()
 // A schema is a collection of type definitions (hence "typeDefs")
