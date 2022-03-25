@@ -29,12 +29,13 @@ exports.resolvers = {
         getAccountDetailsByAddress : async (parent, {address}) => {
           try {
             const data = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({address:address}).first()
-            logger.log('info','----- account details successfully retrieved for address : %s ----', address)
+            logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAccountDetailsByAddress): %s',address)
             return data;  
           } catch (error) {
             logger.error('ERROR OCCURRED IN QUERY(getAccountDetailsByAddress): %s', new Error(error))
           }
         },
+
         getAllAccounts: async () => {
           try {
             const data = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id')
@@ -44,6 +45,7 @@ exports.resolvers = {
             logger.error('ERROR OCCURRED IN QUERY(getAllAccounts): %s', new Error(error))
           }
         },
+
         getAllDepositByAccountId : async (parent, {account_id}) => {
           try {
             const data = await db.select('*').from('deposits').where({account_id:account_id})
@@ -53,6 +55,7 @@ exports.resolvers = {
             logger.error('ERROR OCCURRED IN QUERY(getAllDepositByAccountId): %s', new Error(error))
           }
         },
+
         getAllLoanByAccountId : async (_, {account_id}) => {
           try {
             const data = await db.select('*').from('loans').where({account_id:account_id})
@@ -85,9 +88,9 @@ exports.resolvers = {
                 message: "ERROR ADDING ACCOUNT",
                 status_code: 1002
               }          
-          }
-          
+          }  
         },
+
         addDeposit : async (parent, args) => {
           try {
             const accountId = args.account_id;
@@ -134,6 +137,7 @@ exports.resolvers = {
             logger.error('ERROR OCCURRED IN MUTATION(addDeposit): %s', new Error(error))
           }          
         },
+
         addLoan : async (parent, args) => {    
           try {
             const loanData = {
@@ -160,6 +164,7 @@ exports.resolvers = {
             logger.error('ERROR OCCURRED IN MUTATION(addLoan): %s', new Error(error))
           }
         },
+
         updateWhitelistStatus : async (parent, args) => {    
           try {
             await db.from('accounts').where({id:args.account_id})
