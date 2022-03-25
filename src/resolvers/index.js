@@ -162,18 +162,18 @@ exports.resolvers = {
         },
         updateWhitelistStatus : async (parent, args) => {    
           try {
-            
-          } catch (error) {
-            logger.error('ERROR OCCURRED IN MUTATION(addLoan): %s', new Error(error))
-          }
-          await db.from('accounts').where({id:args.account_id})
+            await db.from('accounts').where({id:args.account_id})
             .update({
               whitelist_status_id: args.whitelist_status_id,
               updated_at: new Date()
             })
             logger.log('info','Updated whitelist status to whitelist_status_id: %s', args.whitelist_status_id)
-          //returning the updated whitelist status  
-          return await db.select('*').from('accounts').where({id:args.account_id}).first()
+            //returning the updated whitelist status  
+            return await db.select('*').from('accounts').where({id:args.account_id}).first()
+          } catch (error) {
+            logger.error('ERROR OCCURRED IN MUTATION(addLoan): %s', new Error(error))
+          }
+          
         }
     }
   };
