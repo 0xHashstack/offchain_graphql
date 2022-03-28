@@ -83,11 +83,7 @@ exports.resolvers = {
               logger.log('info','addToDeposit with : %s', updatedDepositDetails)
               return accountDetails
           } catch (error) {
-              logger.error('ERROR OCCURRED IN MUTATION(addAccount): %s', new Error(error))
-              return {
-                message: "ERROR ADDING ACCOUNT",
-                status_code: 1002
-              }          
+              logger.error('ERROR OCCURRED IN MUTATION(addAccount): %s', new Error(error))       
           }  
         },
 
