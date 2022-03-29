@@ -55,10 +55,9 @@ query getAllLoanByAccountId($account_id: ID!) {
 }
 `;
 
-const addAccountMutation = `
+const addAccountMutationQuery = `
   mutation addAccount($address: String!) {
     addAccount(address: $address) {
-      id
       address
       whitelist_status_id
       user_role
@@ -71,7 +70,6 @@ describe("resolvers", () => {
     
     //Test for QUERY: getAccountDetailsByAddress
     const accountDetailsByAddressData = await graphqlTestCall(getAccountDetailsByAddressQuery, { address: "0x0000000000000000000000DUMMY_1"});
-  
     expect(accountDetailsByAddressData).toEqual({
       data: {
         getAccountDetailsByAddress: {
@@ -85,10 +83,8 @@ describe("resolvers", () => {
     
     //Test for QUERY: getAccountDetailsByAddress
     const getAllAccountsData = await graphqlTestCall(getAllAccountsQuery,{});
-  
-    expect(getAllAccountsData).toEqual({
-        data: {
-           getAllAccounts: [
+    expect(getAllAccountsData.data.getAllAccounts).toEqual(expect.arrayContaining(
+      [
             {
               id: "f554c8f6-06e6-4386-88b9-59047adb6365",
               address: "0x0000000000000000000000DUMMY_1",
@@ -113,14 +109,11 @@ describe("resolvers", () => {
               whitelist_status_id: 2,
               user_role: "DUMMY_USER"
             }
-          ]
-        }
-      
-    });
+          ]  
+    ));
 
     //Test for QUERY: getAllDepositByAccountId
     const getAllDepositByAccountIdData = await graphqlTestCall(getAllDepositByAccountIdQuery, { account_id: "a731640c-5b22-496b-86fc-85e630b2155a",});
-  
     expect(getAllDepositByAccountIdData).toEqual({
       "data": {
         "getAllDepositByAccountId": [
@@ -160,11 +153,8 @@ describe("resolvers", () => {
       }
     });
 
-
-
     //Test for QUERY: getAllLoanByAccountId
-    const getAllLoanByAccountIdData = await graphqlTestCall(getAllLoanByAccountIdQuery, { account_id: "f554c8f6-06e6-4386-88b9-59047adb6365",});
-  
+    const getAllLoanByAccountIdData = await graphqlTestCall(getAllLoanByAccountIdQuery, { account_id: "f554c8f6-06e6-4386-88b9-59047adb6365",})
     expect(getAllLoanByAccountIdData).toEqual({
       data: {
         getAllLoanByAccountId: [
@@ -185,7 +175,21 @@ describe("resolvers", () => {
           }
         ]
       }
+    })
+  
+    //test for MUTATION: addAccountMutation
+    const addAccountMutationData = await graphqlTestCall(addAccountMutationQuery, {
+      address: "0x0000000000000000000000DUMMY_5"
+    })
+    expect(addAccountMutationData).toEqual({
+      "data": {
+        "addAccount": {
+          "address": "0x0000000000000000000000DUMMY_5",
+          "whitelist_status_id": 2,
+          "user_role": "USER"
+        }
+      }
     });
 
-  }, 30000);
+  }, 30000)
 });
