@@ -3,7 +3,7 @@ const db = require('../database/db')
 const uuid = require('uuid')
 const logger = require("../utils/logger");
 const ethers = require("ethers")
-const {getToken} = require('./../utils/index')
+const { getAccessToken, sendRefreshToken, createRefreshToken } = require('./../utils/index')
 const { AuthenticationError } = require('apollo-server');
 require('dotenv').config();
 
@@ -103,7 +103,8 @@ exports.resolvers = {
           const valid = signerAddr===address ? true : false
       
           if(valid){
-            return {accessToken: getToken(user), user};
+            sendRefreshToken(context.res, createRefreshToken(user));
+            return {accessToken: getAccessToken(user), user};
           }
           else{
             throw new Error("Invalid Signature");

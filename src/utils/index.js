@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
+
 require('dotenv').config()
 
-const getToken = payload => {
+const getAccessToken = payload => {
     const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: 604800, // 1 Week
+        expiresIn: 900, // 15 minutes
     })
     return token
 }
@@ -17,7 +18,23 @@ const getPayload = token => {
     }
 }
 
+const createRefreshToken = payload => {
+    return jwt.sign( payload,process.env.REFRESH_TOKEN_SECRET,{
+        expiresIn: "28d" // 28 days expiry 
+      }
+    );
+  };
+
+const sendRefreshToken = (res, token) => {
+  res.cookie("jid", token, {
+    httpOnly: true,
+    path: "/refresh_token"
+  });
+};
+
 module.exports = {
-    getToken,
-    getPayload
+    getAccessToken,
+    getPayload,
+    createRefreshToken,
+    sendRefreshToken
 }
