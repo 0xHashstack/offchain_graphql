@@ -2,33 +2,28 @@ const { ApolloServer } = require('apollo-server');
 const { resolvers } = require('./src/resolvers/index');
 const { typeDefs } = require('./src/typedefs/index');
 const logger = require("./src/utils/logger")
+const { getPayload } = require('./src/utils');
+const { basicLogging } = require('./src/utils/basic_logging');
 
 require('dotenv').config()
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against your data.
 
-const BASIC_LOGGING = {
-  requestDidStart(requestContext) {
-      logger.log('http',"request started");
-      logger.log('http',requestContext.request.query);
-      //logger.log('info',requestContext.request.variables);
-      return {
-          didEncounterErrors(requestContext) {
-              logger.error("an error happened in response to query " + requestContext.request.query);
-              logger.error(requestContext.errors);
-          }
-      };
-  },
 
-  willSendResponse(requestContext) {
-      logger.log('info',"response sent", requestContext.response);
-  }
-};
 
 const server = new ApolloServer({ 
   typeDefs,
   resolvers, 
-  plugins: [BASIC_LOGGING]
+  plugins: [basicLogging],
+  context: ({ req }) => {
+    // get the user token from the headers
+    const token = req.headers.authorization || '';
+    // try to retrieve a user with the token
+    
+    const { payload: user, loggedIn } = getPayload(token);
+    // add the user to the context
+    return { user, loggedIn };
+  },
 });
 
 // The `listen` method launches a web server.
