@@ -10,7 +10,8 @@ exports.typeDefs = gql`
   type Account {
     id: ID
     address: String
-    whitelist_status_id: Int 
+    whitelist_status_id: Int
+    whitelist_status_description: String 
     created_at: Date
     user_role: String
     updated_at: Date
@@ -77,4 +78,12 @@ exports.typeDefs = gql`
 2- ""
 10-""
 18-""
+
+---------------------------LIQUIDATION STATUS --------------------------------
+2- ""
+10-""
+18-""
+26=""
+34=""
+
 */

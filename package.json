@@ -32,8 +32,8 @@
     "nodemon": "^2.0.15",
     "pg": "^8.7.3",
     "pm2": "^5.2.0",
-    "request": "^2.88.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "winston": "^3.6.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
