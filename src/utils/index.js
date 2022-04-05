@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-require('dotenv').config()
 
 const getAccessToken = payload => {
     const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {

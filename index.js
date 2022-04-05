@@ -1,4 +1,3 @@
-require('dotenv').config()
 const { ApolloServer } = require('apollo-server-express');
 const { applyMiddleware } = require("graphql-middleware");
 const { resolvers } = require('./src/resolvers/index');
@@ -27,7 +26,7 @@ async function startApolloServer() {
   );
   app.use(cookieParser());
   
-  app.get("/", (_req, res) => res.send("hello"));
+  app.get("/", (_req, res) => res.send("Welcome to Hashstack Finance"));
   
   app.post("/refresh_token", async (req, res) => {
     const token = req.cookies.jid;

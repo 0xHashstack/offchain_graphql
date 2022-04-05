@@ -5,7 +5,6 @@ const logger = require("../utils/logger");
 const ethers = require("ethers")
 const { getAccessToken, sendRefreshToken, createRefreshToken } = require('./../utils/index')
 const { AuthenticationError } = require('apollo-server');
-require('dotenv').config();
 
 const resolverMap = {
   Date: new GraphQLScalarType({
