@@ -6,10 +6,10 @@ const filter = (level) => format((info) => {
     }
   })();
 
-const logger = createLogger({
+module.exports = createLogger({
     transports:
     [new transports.File({
-        filename: './logs/Open_offchain.log',
+        filename: '../../logs/Open_offchain.log',
         format:format.combine(
             format.splat(),
             format.timestamp({format: 'DD-MMM-YYYY HH:mm:ss'}),
@@ -17,7 +17,7 @@ const logger = createLogger({
             format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`),
         )}),
         new transports.File({
-            filename: './logs/http.log',
+            filename: '../../logs/http.log',
             level:"http",
             format:format.combine(
                 filter("http"),
@@ -37,5 +37,3 @@ const logger = createLogger({
     exitOnError: false
 
 });
-
-module.exports = logger;
