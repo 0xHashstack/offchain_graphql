@@ -12,6 +12,21 @@ const cookieParser = require("cookie-parser")
 const jwt = require('jsonwebtoken')
 const db = require('./src/database/db')
 
+
+const PORT = process.env.PORT || 4000;
+const CORS_OPTIONS = {
+  origin: [ 
+            'https://testnet.hashstack.finance',
+            'https://stagingnet.hashstack.finance', 
+            'https://devapi.hashstack.finance',
+            `http://localhost:${PORT}`,
+            'http://localhost:3000', 
+            'http://localhost:3001'
+          ],
+  optionsSuccessStatus: 200,
+  credentials: false
+}
+
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against your data.
 startApolloServer()
@@ -19,10 +34,7 @@ async function startApolloServer() {
 
   const app = express();
   app.use(
-    cors({
-      origin: "http://localhost:4000",
-      credentials: false
-    })
+    cors(CORS_OPTIONS)
   );
   app.use(cookieParser());
   
@@ -71,6 +83,6 @@ async function startApolloServer() {
   await server.start();
   server.applyMiddleware({ app, path: "/graphql", cors: false });
 
-  await new Promise(resolve => httpServer.listen({ port: 4000 }, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  await new Promise(resolve => httpServer.listen({ port: PORT }, resolve));
+  console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
 }
