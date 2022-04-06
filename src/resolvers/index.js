@@ -231,7 +231,27 @@ exports.resolvers = {
               //returning the updated whitelist status  
               return await db.select('*').from('accounts').where({id:args.account_id}).first()
             } catch (error) {
-              logger.error('ERROR OCCURRED IN MUTATION(addLoan): %s', new Error(error))
+              logger.error('ERROR OCCURRED IN MUTATION(updateWhitelistStatus): %s', new Error(error))
+            }
+          } 
+          else{
+            throw new AuthenticationError("Please Login Again!")
+          }
+        },
+
+        requestWhitelist : async (parent, {account_id}, context) => { 
+          if(context.loggedIn){
+            try {
+              await db.from('accounts').where({id:account_id})
+              .update({
+                whitelist_status_id: 10,
+                updated_at: new Date()
+              })
+              logger.log('info','Whitelist request for account_id: %s', account_id)
+              //returning the updated whitelist status  
+              return await db.select('*').from('accounts').where({id:account_id}).first()
+            } catch (error) {
+              logger.error('ERROR OCCURRED IN MUTATION(requestWhitelist): %s', new Error(error))
             }
           } 
           else{
