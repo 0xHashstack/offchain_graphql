@@ -1,3 +1,5 @@
+require('dotenv').config();
+var newrelic = require('newrelic');
 const { ApolloServer } = require('apollo-server-express');
 const { applyMiddleware } = require("graphql-middleware");
 const { resolvers } = require('./src/resolvers/index');
