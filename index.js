@@ -29,7 +29,6 @@ const CORS_OPTIONS = {
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against your data.
-startApolloServer()
 async function startApolloServer() {
 
   const app = express();
@@ -86,3 +85,6 @@ async function startApolloServer() {
   await new Promise(resolve => httpServer.listen({ port: PORT }, resolve));
   console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
 }
+
+
+startApolloServer()
