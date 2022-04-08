@@ -111,25 +111,20 @@ exports.resolvers = {
         },
 
         addAccount : async (parent, args, context) => {
-          if(context.loggedIn){
-            try {
-              const accountDetails = {
-                id: uuid.v4(),
-                address: args.address,
-                whitelist_status_id: 2,
-                user_role: "USER",
-                created_at: new Date(),
-                updated_at: new Date()
-              }
-              await db.from('accounts').insert(accountDetails)
-              logger.log('info','addToDeposit with : %s', updatedDepositDetails)
-              return accountDetails
-            } catch (error) {
-                logger.error('ERROR OCCURRED IN MUTATION(addAccount): %s', new Error(error))       
+          try {
+            const accountDetails = {
+              id: uuid.v4(),
+              address: args.address,
+              whitelist_status_id: 2,
+              user_role: "USER",
+              created_at: new Date(),
+              updated_at: new Date()
             }
-          }
-          else{
-            throw new AuthenticationError("Please Login Again!")
+            await db.from('accounts').insert(accountDetails)
+            logger.log('info','addToDeposit with : %s', updatedDepositDetails)
+            return accountDetails
+          } catch (error) {
+              logger.error('ERROR OCCURRED IN MUTATION(addAccount): %s', new Error(error))       
           }
         },
 
