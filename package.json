@@ -16,7 +16,7 @@
   "author": "Nikola_Shrutika",
   "license": "BSD-2-Clause",
   "engines": {
-    "node": ">= 14.0.0",
+    "node": ">= 16.0.0",
     "npm": ">= 5.0.0"
   },
   "dependencies": {
