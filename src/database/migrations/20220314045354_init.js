@@ -92,10 +92,6 @@ exports.up = async function(knex) {
         table.timestamp('created_at', { useTz: true }).notNullable();
         table.timestamp('updated_at', { useTz: true }).notNullable();
     })
-    .createTable('whitelist_address', table => {
-        table.uuid('id').primary().notNullable();
-        table.string('address').notNullable().unique();
-    })
 };
 
 /**
@@ -104,7 +100,6 @@ exports.up = async function(knex) {
  */
 exports.down = function(knex) {
     knex.schema
-    .dropTable('whitelist_address')
     .dropTable('liquidations')
     .dropTable('loans')
     .dropTable('deposits')
