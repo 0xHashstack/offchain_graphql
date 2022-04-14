@@ -71,6 +71,8 @@ exports.typeDefs = gql`
     addLoan(loan_market: String!, loan_amount: Float!, collateral_market: String!, collateral_amount: Float!, commitment: String!, cdr: Float!, debt_category: Int!, current_amount: Float!, current_market: String!, account_id: ID!): Loan!
 
     updateWhitelistStatus(account_id: ID!, whitelist_status_id: Int!): Account!
+
+    requestWhitelist(account_id: ID!): Account!
   }
 `;
 

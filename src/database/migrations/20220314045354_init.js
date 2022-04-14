@@ -92,7 +92,6 @@ exports.up = async function(knex) {
         table.timestamp('created_at', { useTz: true }).notNullable();
         table.timestamp('updated_at', { useTz: true }).notNullable();
     })
-    
 };
 
 /**
