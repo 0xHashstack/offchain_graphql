@@ -88,6 +88,7 @@ exports.resolvers = {
             throw new AuthenticationError("Please Login Again!")
           } 
         },
+        hello: (_, { name }) => `Hello ${name}!`,
     },
 
     Mutation : {
