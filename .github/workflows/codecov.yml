@@ -1,0 +1,36 @@
+name: app tests and code coverage reports
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [ main, staging ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]    
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+      run: |
+        npm install
+        npm run test
+        npm run test-covergae -u
+        # npm test -- --coverage && ./codecov -t 7c22c138-5312-43a7-87f4-e0be2ee7ee29  
+          
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        # files: ./coverage.xml
+        # directory: ./coverage/reports/
+        # fail_ci_if_error: true
