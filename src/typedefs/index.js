@@ -10,7 +10,8 @@ exports.typeDefs = gql`
   type Account {
     id: ID
     address: String
-    whitelist_status_id: Int 
+    whitelist_status_id: Int
+    whitelist_status_description: String 
     created_at: Date
     user_role: String
     updated_at: Date
@@ -45,6 +46,11 @@ exports.typeDefs = gql`
       updated_at: Date
   }
 
+  type LoginResponse {
+      accessToken: String!
+      account_id: ID!
+  }
+
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "accounts" query returns an array of zero or more Account (defined above).
@@ -57,6 +63,8 @@ exports.typeDefs = gql`
   }
 
   type Mutation {
+    login(signature: String!, address: String!): LoginResponse!
+    
     addAccount(address: String!): Account!
 
     addDeposit(account_id: ID!, commitment: String!, market: String!, amount: Float!): Deposit!
@@ -64,6 +72,8 @@ exports.typeDefs = gql`
     addLoan(loan_market: String!, loan_amount: Float!, collateral_market: String!, collateral_amount: Float!, commitment: String!, cdr: Float!, debt_category: Int!, current_amount: Float!, current_market: String!, account_id: ID!): Loan!
 
     updateWhitelistStatus(account_id: ID!, whitelist_status_id: Int!): Account!
+
+    requestWhitelist(account_id: ID!): Account!
   }
 `;
 
@@ -77,4 +87,12 @@ exports.typeDefs = gql`
 2- ""
 10-""
 18-""
+
+---------------------------LIQUIDATION STATUS --------------------------------
+2- ""
+10-""
+18-""
+26=""
+34=""
+
 */
