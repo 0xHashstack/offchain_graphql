@@ -1,37 +1,88 @@
-const { ApolloServer } = require('apollo-server');
+const { ApolloServer } = require('apollo-server-express');
+const { applyMiddleware } = require("graphql-middleware");
 const { resolvers } = require('./src/resolvers/index');
 const { typeDefs } = require('./src/typedefs/index');
-const logger = require("./src/utils/logger")
+const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
+const { getPayload, getAccessToken, sendRefreshToken,  createRefreshToken } = require('./src/utils');
+const { basicLogging } = require('./src/utils/basic_logging');
+const cors = require("cors");
+const express = require("express");
+const http = require('http');
+const cookieParser = require("cookie-parser")
+const jwt = require('jsonwebtoken')
+const db = require('./src/database/db')
 
-require('dotenv').config()
+
+const PORT = process.env.PORT || 4000;
+const CORS_OPTIONS = {
+  origin: [ 
+            'https://testnet.hashstack.finance',
+            'https://stagingnet.hashstack.finance', 
+            'https://devapi.hashstack.finance',
+            `http://localhost:${PORT}`,
+            'http://localhost:3000', 
+            'http://localhost:3001'
+          ],
+  optionsSuccessStatus: 200,
+  credentials: false
+}
+
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against your data.
+startApolloServer()
+async function startApolloServer() {
 
-const BASIC_LOGGING = {
-  requestDidStart(requestContext) {
-      logger.log('http',"request started");
-      logger.log('http',requestContext.request.query);
-      //logger.log('info',requestContext.request.variables);
-      return {
-          didEncounterErrors(requestContext) {
-              logger.error("an error happened in response to query " + requestContext.request.query);
-              logger.error(requestContext.errors);
-          }
-      };
-  },
+  const app = express();
+  app.use(
+    cors(CORS_OPTIONS)
+  );
+  app.use(cookieParser());
+  
+  app.get("/", (_req, res) => res.send("Welcome to Hashstack Finance"));
+  
+  app.post("/refresh_token", async (req, res) => {
+    const token = req.cookies.jid;
+    if (!token) {
+      return res.send({ ok: false, accessToken: "" });
+    }
+    let payload = null;
+    try {
+      payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    } catch (err) {
+      console.log(err);
+      return res.send({ ok: false, accessToken: "" });
+    }
+    // token is valid and
+    // we can send back an access token
+    const user = await db.select('*').from('accounts').where({address: payload.address}).first()
+    if (!user) {
+      return res.send({ ok: false, accessToken: "" });
+    }
+    
+    sendRefreshToken(res, createRefreshToken(user));
+    return res.send({ ok: true, accessToken: getAccessToken(user) });
+  });
 
-  willSendResponse(requestContext) {
-      logger.log('info',"response sent", requestContext.response);
-  }
-};
+  
+  
+  const httpServer = http.createServer(app);
+  const server = new ApolloServer({ 
+    typeDefs,
+    resolvers, 
+    plugins: [basicLogging, ApolloServerPluginDrainHttpServer({ httpServer })],
+    context: ({ req, res }) => {
+      // get the user token from the headers
+      const token = req.headers.authorization || '';
+      // try to retrieve a user with the token
+      
+      const { payload: user, loggedIn } = getPayload(token);
+      // add the user to the context
+      return { user, loggedIn, res };
+    },
+  });
+  await server.start();
+  server.applyMiddleware({ app, path: "/graphql", cors: false });
 
-const server = new ApolloServer({ 
-  typeDefs,
-  resolvers, 
-  plugins: [BASIC_LOGGING]
-});
-
-// The `listen` method launches a web server.
-server.listen({port: process.env.PORT || 4000}).then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+  await new Promise(resolve => httpServer.listen({ port: PORT }, resolve));
+  console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
+}
