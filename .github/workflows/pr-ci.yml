@@ -23,5 +23,14 @@ jobs:
       run: |
         npm install
         npm run test
+        # npm test -- --coverage && ./codecov -t 7c22c138-5312-43a7-87f4-e0be2ee7ee29  
       env:
         CI: true
+    
+    # - name: Report coverage to codecov
+    #   uses: codecov/codecov-action@@v1
+    #   with:
+    #     token: ${{ secrets.CODECOV_TOKEN }}
+    #     files: ./coverage.xml
+    #     directory: ./coverage/reports/
+    #     fail_ci_if_error: true
