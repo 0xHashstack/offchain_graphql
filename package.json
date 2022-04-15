@@ -9,7 +9,6 @@
     "prestart": "./node_modules/.bin/knex migrate:latest --env development --knexfile src/database/knexfile.js",
     "start": "pm2 reload ecosystem.config.js",
     "dev": "nodemon index.js",
-    "poststart": "pm2 logs",
     "knex": "./node_modules/.bin/knex --knexfile src/database/knexfile.js",
     "make-migration": "npm run knex migrate:latest --knexfile src/database/knexfile.js"
   },

@@ -1,0 +1,33 @@
+name: Commit CI
+
+on:
+  push:
+    branches: [ production ]
+
+jobs:
+  production-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install and test
+      run: |
+        npm install
+        npm run test
+    - name: AWS SSM Send-Deploy-Command
+      uses: peterkimzz/aws-ssm-send-command@1.0.1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+        instance-ids: ${{ secrets.DEPLOY_STAGING_INSTANCE_IDS }}
+        working-directory: /home/ubuntu/app/secrets
+        command: /bin/sh ./deploy-offchain-graphql.sh > "deploy_$(date).log"
