@@ -111,25 +111,20 @@ exports.resolvers = {
         },
 
         addAccount : async (parent, args, context) => {
-          if(context.loggedIn){
-            try {
-              const accountDetails = {
-                id: uuid.v4(),
-                address: args.address,
-                whitelist_status_id: 2,
-                user_role: "USER",
-                created_at: new Date(),
-                updated_at: new Date()
-              }
-              await db.from('accounts').insert(accountDetails)
-              logger.log('info','addToDeposit with : %s', updatedDepositDetails)
-              return accountDetails
-            } catch (error) {
-                logger.error('ERROR OCCURRED IN MUTATION(addAccount): %s', new Error(error))       
+          try {
+            const accountDetails = {
+              id: uuid.v4(),
+              address: args.address,
+              whitelist_status_id: 2,
+              user_role: "USER",
+              created_at: new Date(),
+              updated_at: new Date()
             }
-          }
-          else{
-            throw new AuthenticationError("Please Login Again!")
+            await db.from('accounts').insert(accountDetails)
+            logger.log('info','addToDeposit with : %s', updatedDepositDetails)
+            return accountDetails
+          } catch (error) {
+              logger.error('ERROR OCCURRED IN MUTATION(addAccount): %s', new Error(error))       
           }
         },
 
@@ -231,7 +226,27 @@ exports.resolvers = {
               //returning the updated whitelist status  
               return await db.select('*').from('accounts').where({id:args.account_id}).first()
             } catch (error) {
-              logger.error('ERROR OCCURRED IN MUTATION(addLoan): %s', new Error(error))
+              logger.error('ERROR OCCURRED IN MUTATION(updateWhitelistStatus): %s', new Error(error))
+            }
+          } 
+          else{
+            throw new AuthenticationError("Please Login Again!")
+          }
+        },
+
+        requestWhitelist : async (parent, {account_id}, context) => { 
+          if(context.loggedIn){
+            try {
+              await db.from('accounts').where({id:account_id})
+              .update({
+                whitelist_status_id: 10,
+                updated_at: new Date()
+              })
+              logger.log('info','Whitelist request for account_id: %s', account_id)
+              //returning the updated whitelist status  
+              return await db.select('*').from('accounts').where({id:account_id}).first()
+            } catch (error) {
+              logger.error('ERROR OCCURRED IN MUTATION(requestWhitelist): %s', new Error(error))
             }
           } 
           else{
