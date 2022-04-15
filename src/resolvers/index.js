@@ -53,7 +53,6 @@ exports.resolvers = {
             } catch (error) {
               logger.error('ERROR OCCURRED IN QUERY(getAllAccounts): %s', new Error(error))
             }
-            return
           } else {
               throw new AuthenticationError("Please Login Again!")
           }
@@ -62,7 +61,7 @@ exports.resolvers = {
         getAllDepositByAccountId : async (parent, {account_id}, context) => {
           if(context.loggedIn){
             try {
-              const data = await db.select('*').from('deposits').where({account_id:account_id})
+              const data = await db.select('*').from('account_balance').where({account_id:account_id})
               logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllDepositByAccountId), account_id : %s', account_id)
               return data;
             } catch (error) {
@@ -88,6 +87,17 @@ exports.resolvers = {
             throw new AuthenticationError("Please Login Again!")
           } 
         },
+
+        getAllLoansReadyForLiquidationByLiquidator: async (parent, args, context) => {          
+          try {
+            const data = await db.select('*').from('loans').join('loan_status_lookup', 'loan_status_lookup.loan_status_id', '=', 'loans.loan_status_id').where({loan_status_description:"READY_FOR_LIQUIDATION_BY_LIQUIDATOR"})
+            logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllLoansReadyForLiquidationByLiquidator)')
+            return data;
+          } catch (error) {
+            logger.error('ERROR OCCURRED IN QUERY(getAllLoansReadyForLiquidationByLiquidator): %s', new Error(error))
+          }
+        },
+
         hello: (_, { name }) => `Hello ${name}!`,
     },
 
@@ -113,17 +123,25 @@ exports.resolvers = {
 
         addAccount : async (parent, args, context) => {
           try {
-            const accountDetails = {
-              id: uuid.v4(),
-              address: args.address,
-              whitelist_status_id: 2,
-              user_role: "USER",
-              created_at: new Date(),
-              updated_at: new Date()
+            //check if address already exists
+            const existingAccount = await db.select('*').from('accounts').where({address:args.address}).first();
+            if(existingAccount){
+              logger.log('info','Account already exists with address : %s', args.address)
+              return existingAccount
             }
-            await db.from('accounts').insert(accountDetails)
-            logger.log('info','addToDeposit with : %s', updatedDepositDetails)
-            return accountDetails
+            else{
+              const accountDetails = {
+                id: uuid.v4(),
+                address: args.address,
+                whitelist_status_id: 2,
+                user_role: "USER",
+                created_at: new Date(),
+                updated_at: new Date()
+              }
+              await db.from('accounts').insert(accountDetails)
+              logger.log('info','Account added with address : %s', args.address)
+              return accountDetails
+            }
           } catch (error) {
               logger.error('ERROR OCCURRED IN MUTATION(addAccount): %s', new Error(error))       
           }
@@ -137,24 +155,23 @@ exports.resolvers = {
               const depositMarket = args.market;
               const depositAmount = args.amount;
               //find the deposit-id, if deposit already exist
-              const existingDeposit = await db.select('*').from('deposits').where({account_id:accountId ,commitment:depositCommitment, market:depositMarket}).first();
+              const existingDeposit = await db.select('*').from('account_balance').where({account_id:accountId ,commitment:depositCommitment, market:depositMarket}).first();
             
               //If deposit already exists
               if(existingDeposit){
-                current_net_amount = existingDeposit.net_amount
-                updated_net_amount = current_net_amount*1 + depositAmount*1
+                current_net_balance = existingDeposit.net_balance
+                updated_net_balance = current_net_balance*1 + depositAmount*1
   
                 // check if acquired yield needs to be updated
-                // current_net_acquired_yield = db.select('net_amount').from('deposits').where({id:existingDepositId})
-                // updated_net_acquired_yield = current_net_amount + args.amount
-                console.log("UPDATING EXISTING DEPOSIT")
-                await db.from('deposits').where({id:existingDeposit.id})
+                // current_net_acquired_yield = db.select('net_balance').from('account_balance').where({id:existingDepositId})
+                // updated_net_acquired_yield = current_net_balance + args.amount
+                await db.from('account_balance').where({id:existingDeposit.id})
                 .update({
-                  net_amount: updated_net_amount,
+                  net_balance: updated_net_balance,
                   updated_at: new Date()
                 })
-                logger.log('info','updated existing deposit, New Amount: %s', updated_net_amount)
-                return await db.select('*').from('deposits').where({id:existingDeposit.id}).first();
+                logger.log('info','updated existing deposit, New Amount: %s', updated_net_balance)
+                return await db.select('*').from('account_balance').where({id:existingDeposit.id}).first();
               }
               //else if deposit doesn't exists 
               else{
@@ -163,13 +180,13 @@ exports.resolvers = {
                   account_id: accountId,
                   commitment: depositCommitment,
                   market: depositMarket,
-                  net_amount: depositAmount,
-                  net_accrued_yield:0,
+                  net_balance: depositAmount,
+                  net_saving_interest:0,
                   created_at: new Date(),
                   updated_at: new Date()
                 }
                 logger.log('info','Created new Deposit: %s', deposit)
-                await db.from('deposits').insert(deposit)
+                await db.from('account_balance').insert(deposit)
                 return deposit;
               }
             } catch (error) {
@@ -241,7 +258,8 @@ exports.resolvers = {
               await db.from('accounts').where({id:account_id})
               .update({
                 whitelist_status_id: 10,
-                updated_at: new Date()
+                updated_at: new Date(),
+                whitelist_requested_timestamp: new Date()
               })
               logger.log('info','Whitelist request for account_id: %s', account_id)
               //returning the updated whitelist status  
