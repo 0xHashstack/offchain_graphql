@@ -4,7 +4,18 @@ const request = require('supertest');
 const { typeDefs } = require('../typedefs/index');
 const { resolvers } = require('../resolvers/index')
 const { ApolloServer } = require('apollo-server')
-const { getPayload} = require('./../../src/utils');
+const { getPayload, getAccessToken} = require('./../../src/utils');
+
+// TEST USER
+const testAccount = {
+  address:"0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
+  account_id: "f554c8f6-06e6-4386-88b9-59047adb6365",
+  signature: "0xda8bce5014816646060e9c83ce81554a30d2bbde62f358e7cd0b3e06a39c3aef5e88b6f58f7977796bfa6e7f02125d0c8444506769969d725be6db398558d48b1c",  
+  jwtAccessToken: getAccessToken({
+    id: 'f554c8f6-06e6-4386-88b9-59047adb6365',
+    address: '0x317A69fA54E8e7113326E897DF6204ef2129a3A7'
+  })
+}
 
 const createApolloServer = function (options = { port: 4009 }) {
   const server = new ApolloServer({
@@ -13,7 +24,7 @@ const createApolloServer = function (options = { port: 4009 }) {
     plugins: [],
     context: ({ req, res }) => {
       // get the user token from the headers
-      const token = req.headers.authorization || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY1NTRjOGY2LTA2ZTYtNDM4Ni04OGI5LTU5MDQ3YWRiNjM2NSIsImFkZHJlc3MiOiIweDMxN0E2OWZBNTRFOGU3MTEzMzI2RTg5N0RGNjIwNGVmMjEyOWEzQTciLCJ3aGl0ZWxpc3Rfc3RhdHVzX2lkIjoyLCJ1c2VyX3JvbGUiOiJEVU1NWV9VU0VSIiwiY3JlYXRlZF9hdCI6IjIwMjItMDQtMTVUMTM6MzU6NTkuNTE3WiIsInVwZGF0ZWRfYXQiOiIyMDIyLTA0LTE1VDEzOjM1OjU5LjUxN1oiLCJ3aGl0ZWxpc3RfcmVxdWVzdGVkX3RpbWVzdGFtcCI6IjIwMjItMDQtMTVUMTM6MzU6NTkuNTE3WiIsImlhdCI6MTY1MDMyNTc4OSwiZXhwIjo5MDE2NTAzMjU3ODl9.wSSl-mqNlrnz_tLf8AfCDeSH8OVJK8zAqlYLNNHaRbo';
+      const token = req.headers.authorization || testAccount.jwtAccessToken;
       // try to retrieve a user with the token
       
       const { payload: user, loggedIn } = getPayload(token);
@@ -31,13 +42,6 @@ const createApolloServer = function (options = { port: 4009 }) {
   // serverInfo is an object containing the server instance and the url the server is listening on
   return serverInfo;
 };
-
-
-// TEST USER
-const testAccount = {
-  address:"0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
-  account_id: "f554c8f6-06e6-4386-88b9-59047adb6365"
-}
 
 // SAMPLE TEST
 const helloDataQuery = {

@@ -104,7 +104,7 @@ exports.resolvers = {
     Mutation : {
 
         login: async (parent, {signature ,address}, context) => {
-          let user = await db.select('*').from('accounts').where({address:address}).first()
+          let user = await db.select('id','address').from('accounts').where({address:address}).first()
           
           if (!user) {
             throw new Error("could not find user");
