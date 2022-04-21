@@ -23,6 +23,7 @@ exports.typeDefs = gql`
     created_at: Date
     updated_at: Date
     whitelist_requested_timestamp: Date
+    waitlist_count: Int
   }
 
   type Deposit {
@@ -84,10 +85,10 @@ exports.typeDefs = gql`
   # case, the "accounts" query returns an array of zero or more Account (defined above).
   type Query {
     getAllAccounts: [AccountWithWhitelistStatus]
-    getAccountDetailsByAddress(address: String!): Account
+    getAccountDetailsByAddress(address: String!): AccountWithWhitelistStatus
     getAllDepositByAccountId(account_id: ID!): [Deposit]
     getAllLoanByAccountId(account_id: ID!): [Loan]
-    getAllLoansReadyForLiquidationByLiquidator: [LoanWithLoanStatus]
+    getAllLoansByStatus(loan_status_description: String!): [LoanWithLoanStatus]
     hello(name: String): String!
   }
 
@@ -105,26 +106,3 @@ exports.typeDefs = gql`
     requestWhitelist(account_id: ID!): Account!
   }
 `;
-
-/*
----------------------------WHITELIST STATUS--------------------------- 
-2 - "WHITELIST_NOT_REQUESTED"
-10 - "WHITELIST_REQUESTED"
-18 - "WHITELISTED"
-
----------------------------LOAN STATUS --------------------------------
-2. LOAN_CREATED
-10. READY_FOR_LIQUIDATION_BY_LIQUIDATOR
-18. PROTOCOL_TRIGGERED_LIQUIDATION_ENQUEUED
-26. LIQUIDATED_BY_PROTOCOL
-34. LIQUIDATED_BY_LIQUIDATOR
-42. REPAID_BY_USER
-
----------------------------LIQUIDATION STATUS --------------------------------
-2- ""
-10-""
-18-""
-26=""
-34=""
-
-*/
