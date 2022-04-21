@@ -29,18 +29,6 @@ exports.up = async function(knex) {
         table.timestamp('updated_at', { useTz: true }).notNullable();
         table.timestamp('whitelist_requested_timestamp', { useTz: true });
       })
-    .createTable('withdrawals', table => {
-        table.uuid('id').primary().notNullable();
-        table.string('market').notNullable();
-        table.string('commitment').notNullable();
-        table.decimal('amount',50,20).notNullable();
-        table
-        .uuid('account_id')
-        .notNullable()
-        .references('accounts.id');
-        table.timestamp('created_at', { useTz: true }).notNullable();
-        table.timestamp('updated_at', { useTz: true }).notNullable();
-    })
     .createTable('account_balance', table => {
         table.uuid('id').primary().notNullable();
         table.string('market').notNullable();
@@ -117,7 +105,6 @@ exports.down = function(knex) {
     .dropTable('liquidations')
     .dropTable('loans')
     .dropTable('account_balance')
-    .dropTable('withdrawals')
     .dropTable('accounts')
     .dropTable('loan_status_lookup')
     .dropTable('liquidation_status_lookup')

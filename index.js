@@ -56,7 +56,7 @@ async function startApolloServer() {
     }
     // token is valid and
     // we can send back an access token
-    const user = await db.select('*').from('accounts').where({address: payload.address}).first()
+    const user = await db.select('id','address').from('accounts').where({address: payload.address}).first()
     if (!user) {
       return res.send({ ok: false, accessToken: "" });
     }
