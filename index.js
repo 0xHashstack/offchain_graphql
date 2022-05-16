@@ -40,7 +40,7 @@ async function startApolloServer() {
   );
   app.use(cookieParser());
   
-  app.get("/", (_req, res) => res.send("Welcome to Hashstack Finance !"));
+  app.get("/", (_req, res) => res.send("Welcome to Hashstack Finance"));
   
   app.post("/refresh_token", async (req, res) => {
     const token = req.cookies.jid;
