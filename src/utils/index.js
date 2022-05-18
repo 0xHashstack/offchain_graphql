@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('find-config')('.env') })
 const jwt = require("jsonwebtoken");
 const {JWT_EXPIRY_TIME, REFRESH_TOKEN_EXPIRY_TIME} = require('./../constants/constants.js')
 

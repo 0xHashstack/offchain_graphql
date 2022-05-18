@@ -1,4 +1,5 @@
-require('dotenv').config()
+require('dotenv').config({ path: require('find-config')('.env') })
+
 const request = require('supertest');
 // we will use supertest to test our server
 const { typeDefs } = require('../typedefs/index');

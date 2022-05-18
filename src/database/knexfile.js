@@ -1,4 +1,6 @@
-require('dotenv').config({ path: '../../.env' });
+// require('dotenv').config();
+require('dotenv').config({ path: require('find-config')('.env') })
+
 // Update with your config settings.
 
 /**
