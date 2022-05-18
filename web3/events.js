@@ -10,6 +10,7 @@ const { Console } = require("winston/lib/winston/transports");
 const { createNewDeposit, addToDeposit, createWithdrawalDeposit } = require('./controllers/accountBalance');
 const { addLoan, updateSwapLoanEventData, loanRepaid, createAddCollateralDeposit, createWithdrawalPartialLoan } = require('./controllers/loanController');
 const logger = require("../src/utils/logger");
+const db = require('../src/database/db')
 
 const listenToEvents = (app) => {
     const web3 = getWeb3();
@@ -150,8 +151,8 @@ const SwapLoanEvent = (libOpenContract) => {
             const { account, loanMarket, commitment, currentMarket, currentAmount, isSwapped } = event.returnValues;
             
             try {
-                const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: account }).first()
-                const loan = await db.select('*').from('loans').where({account_id: accountData.account_id, loan_market:loanMarket, commitment:commitment})
+                //const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: account }).first()
+                //const loan = await db.select('*').from('loans').where({account_id: accountData.account_id, loan_market:loanMarket, commitment:commitment})
                 //await updateSwapLoanEventData(loan.loan_id, account, currentMarket, currentAmount, isSwapped);
             } catch (error) {
                 console.error(error);
