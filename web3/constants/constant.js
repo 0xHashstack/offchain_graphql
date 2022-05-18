@@ -1,11 +1,10 @@
 const rpcURLs = {
-    "localhost":"ws://localhost:8545",
     "infuraKovan": "https://kovan.infura.io/v3/99b8947af7e14278ae235bb21eb81f53",
     "infuraRopsten": "wss://ropsten.infura.io/ws/v3/84787fdf8ce842f0a2c41131de1ef5e9",
     "binanceTestnet": "wss://ws-nd-400-266-190.p2pify.com/1efac602169fba8d5bf0589315ec436a"
 }
 
-const diamondAddress = "0x182ba4ad94140fa1fc0778a86f39c9d9d6682dce";
+const diamondAddress = "0x12bdAC56C03FA27687c6f35E60fC36BecB00850e";
 
 const chain = "0x61"
 

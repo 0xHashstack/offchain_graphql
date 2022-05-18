@@ -204,8 +204,8 @@ exports.resolvers = {
             try {
               const loanData = {
                 id: uuid.v4(),
-                loan_market: args.loan_amount,
                 loan_amount: args.loan_amount,
+                loan_market: args.loan_market,
                 collateral_market: args.collateral_market,
                 collateral_amount: args.collateral_amount,
                 commitment: args.commitment,

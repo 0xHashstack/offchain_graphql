@@ -2,7 +2,7 @@ const Web3 = require('web3');
 const { rpcURLs } = require("./constants/constant");
 
 const getWeb3 = () => {
-    return new Web3(rpcURLs["localhost"]);
+    return new Web3(rpcURLs["binanceTestnet"]);
 }
 
 const estimateGas = (contractObject, method, options, params) => {
