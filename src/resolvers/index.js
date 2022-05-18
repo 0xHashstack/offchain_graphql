@@ -6,35 +6,28 @@ const ethers = require("ethers")
 const { getAccessToken, sendRefreshToken, createRefreshToken } = require('./../utils/index')
 const { AuthenticationError } = require('apollo-server');
 
-const resolverMap = {
-  Date: new GraphQLScalarType({
-    name: 'Date',
-    description: 'Date custom scalar type',
-    parseValue(value) {
-      return new Date(value); // value from the client
-    },
-    serialize(value) {
-      return value.getTime(); // value sent to the client
-    },
-    parseLiteral(ast) {
-      if (ast.kind === Kind.INT) {
-        return parseInt(ast.value, 10); // ast value is always in string format
-      }
-      return null;
-    },
-  }),
-}
 
 exports.resolvers = {
-    Date: resolverMap,
 
     Query: {
         getAccountDetailsByAddress : async (parent, {address}, context) => {
           if(context.loggedIn){
             try {
               const data = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({address:address}).first()
+              const waitlist_count_object = await db.count('id').from('accounts').where('whitelist_requested_timestamp','<=', data.whitelist_requested_timestamp).first()
+              const accountDetails = {
+                id: data.id,
+                address: data.address,
+                whitelist_status_id: data.whitelist_status_id,
+                whitelist_status_description: data.whitelist_status_description, 
+                user_role: data.user_role,
+                created_at: data.created_at,
+                updated_at: data.updated_at,
+                whitelist_requested_timestamp: data.whitelist_requested_timestamp,
+                waitlist_count: waitlist_count_object.count - 1
+              }
               logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAccountDetailsByAddress): %s',address)
-              return data;  
+              return accountDetails;  
             } catch (error) {
               logger.error('ERROR OCCURRED IN QUERY(getAccountDetailsByAddress): %s', new Error(error))
             }
@@ -88,13 +81,13 @@ exports.resolvers = {
           } 
         },
 
-        getAllLoansReadyForLiquidationByLiquidator: async (parent, args, context) => {          
+        getAllLoansByStatus: async (parent, args, context) => {          
           try {
-            const data = await db.select('*').from('loans').join('loan_status_lookup', 'loan_status_lookup.loan_status_id', '=', 'loans.loan_status_id').where({loan_status_description:"READY_FOR_LIQUIDATION_BY_LIQUIDATOR"})
-            logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllLoansReadyForLiquidationByLiquidator)')
+            const data = await db.select('*').from('loans').join('loan_status_lookup', 'loan_status_lookup.loan_status_id', '=', 'loans.loan_status_id').where({loan_status_description: args.loan_status_description})
+            logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllLoansByStatus)')
             return data;
           } catch (error) {
-            logger.error('ERROR OCCURRED IN QUERY(getAllLoansReadyForLiquidationByLiquidator): %s', new Error(error))
+            logger.error('ERROR OCCURRED IN QUERY(getAllLoansByStatus): %s', new Error(error))
           }
         },
 
@@ -114,7 +107,7 @@ exports.resolvers = {
       
           if(valid){
             sendRefreshToken(context.res, createRefreshToken(user));
-            return {accessToken: getAccessToken(user), user};
+            return {accessToken: getAccessToken(user), account_id: user.id};
           }
           else{
             throw new Error("Invalid Signature");
@@ -198,8 +191,7 @@ exports.resolvers = {
           }
         },
 
-        addLoan : async (parent, args, context) => {    
-          // TODO: P2 add authorization middleware, to avoid code-rep
+        addLoan : async (parent, args, context) => {
           if(context.loggedIn){
             try {
               const loanData = {

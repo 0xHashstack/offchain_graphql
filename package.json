@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
     "prestart": "./node_modules/.bin/knex migrate:latest --env development --knexfile src/database/knexfile.js",
     "start": "pm2 reload ecosystem.config.js",
     "dev": "nodemon index.js",
