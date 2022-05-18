@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const {JWT_EXPIRY_TIME, REFRESH_TOKEN_EXPIRY_TIME} = require('./../constants/constants.js')
 
 const getAccessToken = payload => {
-    const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+    const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET || 'JUST_A_RANDOM_ACCESS_TOKEN_SECRET', {
         expiresIn: JWT_EXPIRY_TIME
     })
     return token
@@ -10,7 +10,7 @@ const getAccessToken = payload => {
 
 const getPayload = token => {
     try {
-        const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'JUST_A_RANDOM_ACCESS_TOKEN_SECRET');
         return { loggedIn: true, payload };
     } catch (err) {
         return { loggedIn: false }
@@ -18,7 +18,7 @@ const getPayload = token => {
 }
 
 const createRefreshToken = payload => {
-    return jwt.sign( payload,process.env.REFRESH_TOKEN_SECRET,{
+    return jwt.sign( payload,process.env.REFRESH_TOKEN_SECRET || 'JUST_A_RANDOM_REFRESH_TOKEN_SECRET',{
         expiresIn: REFRESH_TOKEN_EXPIRY_TIME 
       }
     );
