@@ -1,6 +1,6 @@
 require('dotenv').config({ path: require('find-config')('.env') })
 const jwt = require("jsonwebtoken");
-const {JWT_EXPIRY_TIME, REFRESH_TOKEN_EXPIRY_TIME} = require('./../constants/constants.js')
+const {JWT_EXPIRY_TIME, REFRESH_TOKEN_EXPIRY_TIME} = require('../../constants/constants')
 
 const getAccessToken = payload => {
     const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET || 'JUST_A_RANDOM_ACCESS_TOKEN_SECRET', {

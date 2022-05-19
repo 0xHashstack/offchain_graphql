@@ -140,7 +140,6 @@ exports.up = async function(knex) {
         created_at: new Date(),
         updated_at: new Date()
       })
-
 };
 
 /**

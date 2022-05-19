@@ -1,3 +1,13 @@
+const rpcURLs = {
+    "infuraKovan": "https://kovan.infura.io/v3/99b8947af7e14278ae235bb21eb81f53",
+    "infuraRopsten": "wss://ropsten.infura.io/ws/v3/84787fdf8ce842f0a2c41131de1ef5e9",
+    "binanceTestnet": "wss://ws-nd-400-266-190.p2pify.com/1efac602169fba8d5bf0589315ec436a"
+}
+
+const diamondAddress = "0x12bdAC56C03FA27687c6f35E60fC36BecB00850e";
+
+const chain = "0x61"
+
 const symbols = {
     "0x555344542e740000000000000000000000000000000000000000000000000000": "USDT.t",
     "0x555344432e740000000000000000000000000000000000000000000000000000": "USDC.t",
@@ -40,20 +50,22 @@ const decimalBasedOnMarketHash = {
     "0x57424e4200000000000000000000000000000000000000000000000000000000": 18
 }
 
+const epochLength = 3
+
+// const CT_WHITELISTING=259200000
+
 const CT_WHITELISTING=604800000
 
-const JWT_EXPIRY_TIME =  900 // 15 minutes
-
-const REFRESH_TOKEN_EXPIRY_TIME = "28d" // 28 days expiry
-
-module.exports = {    
+module.exports = {
+    rpcURLs,
+    diamondAddress,
+    chain,
     symbols,
     commitmentHash,
     APYFromHash,
     APYFromString,
+    epochLength,
     decimalBasedOnMarket,
     decimalBasedOnMarketHash,
-    CT_WHITELISTING,
-    JWT_EXPIRY_TIME,
-    REFRESH_TOKEN_EXPIRY_TIME
+    CT_WHITELISTING
 }

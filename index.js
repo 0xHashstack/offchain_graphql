@@ -13,7 +13,7 @@ const http = require('http');
 const cookieParser = require("cookie-parser")
 const jwt = require('jsonwebtoken')
 const db = require('./src/database/db')
-
+const { listenToEvents } = require('./web3/events')
 
 const PORT = process.env.PORT || 4000;
 const CORS_OPTIONS = {
@@ -65,7 +65,7 @@ async function startApolloServer() {
     return res.send({ ok: true, accessToken: getAccessToken(user) });
   });
 
-  
+  listenToEvents(app);
   
   const httpServer = http.createServer(app);
   const server = new ApolloServer({ 
