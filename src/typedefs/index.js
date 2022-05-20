@@ -6,7 +6,6 @@ exports.typeDefs = gql`
   scalar Date
 
   type Account {
-    id: ID
     address: String
     whitelist_status_id: Int
     user_role: String
@@ -15,7 +14,6 @@ exports.typeDefs = gql`
   }
 
   type AccountWithWhitelistStatus {
-    id: ID
     address: String
     whitelist_status_id: Int
     whitelist_status_description: String 
@@ -28,7 +26,7 @@ exports.typeDefs = gql`
 
   type Deposit {
     id: ID
-    account_id: ID
+    account_address: String
     commitment: String
     market: String
     net_balance: Float
@@ -50,7 +48,7 @@ exports.typeDefs = gql`
       current_market: String
       is_swapped: Boolean
       loan_status_id: Int
-      account_id: ID
+      account_address: String
       created_at: Date
       updated_at: Date
   }
@@ -70,14 +68,14 @@ exports.typeDefs = gql`
       loan_status_id: Int
       loan_status_description: String
       loan_state: String
-      account_id: ID
+      account_address: ID
       created_at: Date
       updated_at: Date
   }
 
   type LoginResponse {
       accessToken: String!
-      account_id: ID!
+      account_address: String!
   }
 
   # The "Query" type is special: it lists all of the available queries that
@@ -86,8 +84,8 @@ exports.typeDefs = gql`
   type Query {
     getAllAccounts: [AccountWithWhitelistStatus]
     getAccountDetailsByAddress(address: String!): AccountWithWhitelistStatus
-    getAllDepositByAccountId(account_id: ID!): [Deposit]
-    getAllLoanByAccountId(account_id: ID!): [Loan]
+    getAllDepositByAddress(account_address: String!): [Deposit]
+    getAllLoanByAddress(account_address: String!): [Loan]
     getAllLoansByStatus(loan_status_description: String!): [LoanWithLoanStatus]
     hello(name: String): String!
   }
@@ -97,12 +95,12 @@ exports.typeDefs = gql`
     
     addAccount(address: String!): Account!
 
-    addDeposit(account_id: ID!, commitment: String!, market: String!, amount: Float!): Deposit!
+    addDeposit(account_address: String!, commitment: String!, market: String!, amount: Float!): Deposit!
 
-    addLoan(loan_market: String!, loan_amount: Float!, collateral_market: String!, collateral_amount: Float!, commitment: String!, cdr: Float!, debt_category: Int!, current_amount: Float!, current_market: String!, account_id: ID!): Loan!
+    addLoan(loan_market: String!, loan_amount: Float!, collateral_market: String!, collateral_amount: Float!, commitment: String!, cdr: Float!, debt_category: Int!, current_amount: Float!, current_market: String!, account_address: ID!): Loan!
 
-    updateWhitelistStatus(account_id: ID!, whitelist_status_id: Int!): Account!
+    updateWhitelistStatus(account_address: String!, whitelist_status_id: Int!): Account!
 
-    requestWhitelist(account_id: ID!): Account!
+    requestWhitelist(account_address: ID!): Account!
   }
 `;

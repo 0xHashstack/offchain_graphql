@@ -10,10 +10,8 @@ const { getPayload, getAccessToken } = require('./../../src/utils');
 // TEST USER
 const testAccount = {
   address: "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
-  account_id: "f554c8f6-06e6-4386-88b9-59047adb6365",
   signature: "0xda8bce5014816646060e9c83ce81554a30d2bbde62f358e7cd0b3e06a39c3aef5e88b6f58f7977796bfa6e7f02125d0c8444506769969d725be6db398558d48b1c",
   jwtAccessToken: getAccessToken({
-    id: 'f554c8f6-06e6-4386-88b9-59047adb6365',
     address: '0x317A69fA54E8e7113326E897DF6204ef2129a3A7'
   })
 }
@@ -55,9 +53,8 @@ const helloDataQuery = {
 const getAccountDetailsByAddressQuery = {
   query: `query GetAccountDetailsByAddress($address: String!) {
     getAccountDetailsByAddress(address: $address) {
-      id
-      whitelist_status_id
       address
+      whitelist_status_id
       user_role
     }
   }`,
@@ -67,7 +64,6 @@ const getAccountDetailsByAddressQuery = {
 const getAllAccountsQuery = {
   query: `query{
     getAllAccounts {
-      id
       address
       whitelist_status_id
       whitelist_status_description
@@ -77,23 +73,23 @@ const getAllAccountsQuery = {
   variables: {},
 };
 
-const getAllDepositByAccountIdQuery = {
-  query: `query GetAllDepositByAccountId($accountId: ID!) {
-    getAllDepositByAccountId(account_id: $accountId) {
+const getAllDepositByAddressQuery = {
+  query: `query GetAllDepositByAddress($address: String!) {
+    getAllDepositByAddress(account_address: $address) {
       id
-      account_id
+      account_address
       commitment
       market
       net_balance
       net_saving_interest
     }
   }`,
-  variables: { "accountId": testAccount.account_id },
+  variables: { "address": testAccount.address },
 };
 
-const getAllLoanByAccountIdQuery = {
-  query: `query GetAllLoanByAccountId($accountId: ID!) {
-    getAllLoanByAccountId(account_id: $accountId) {
+const getAllLoanByAddressQuery = {
+  query: `query getAllLoanByAddress($account_address: String!) {
+    getAllLoanByAddress(account_address: $account_address) {
       id
       loan_market
       loan_amount
@@ -106,10 +102,10 @@ const getAllLoanByAccountIdQuery = {
       current_market
       is_swapped
       loan_status_id
-      account_id
+      account_address
     }
   }`,
-  variables: { "accountId": testAccount.account_id },
+  variables: { "account_address": testAccount.address },
 };
 
 const getAllLoansByStatusQuery = {
@@ -129,7 +125,7 @@ const getAllLoansByStatusQuery = {
       loan_status_id
       loan_status_description
       loan_state
-      account_id
+      account_address
     }
   }`,
   variables: {"loanStatusDescription": "LOAN_CREATED"},
@@ -139,7 +135,7 @@ const getAllLoansByStatusQuery = {
 const loginMutation = {
   query: `mutation Login($signature: String!, $address: String!) {
     login(signature: $signature, address: $address) {
-      account_id
+      account_address
     }
   }`,
   variables: {  
@@ -176,7 +172,6 @@ describe('e2e test', () => {
       expect(response.body).toEqual({
         "data": {
           "getAccountDetailsByAddress": {
-            "id": "f554c8f6-06e6-4386-88b9-59047adb6365",
             "address": "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
             "whitelist_status_id": 2,
             "user_role": "DUMMY_USER"
@@ -192,28 +187,24 @@ describe('e2e test', () => {
           "data": {
             "getAllAccounts": [
               {
-                "id": "a731640c-5b22-496b-86fc-85e630b2155a",
                 "address": "0x0000000000000000000000DUMMY_3",
                 "whitelist_status_id": 2,
                 "whitelist_status_description": "WHITELIST_NOT_REQUESTED",
                 "user_role": "DUMMY_USER"
               },
               {
-                "id": "f1f791d2-3f61-49cd-8013-6b94c42d3ddf",
                 "address": "0x0000000000000000000000DUMMY_2",
                 "whitelist_status_id": 2,
                 "whitelist_status_description": "WHITELIST_NOT_REQUESTED",
                 "user_role": "DUMMY_USER"
               },
               {
-                "id": "f554c8f6-06e6-4386-88b9-59047adb6365",
                 "address": "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
                 "whitelist_status_id": 2,
                 "whitelist_status_description": "WHITELIST_NOT_REQUESTED",
                 "user_role": "DUMMY_USER"
               },
               {
-                "id": "a8331bd8-fa9d-49ae-aa1e-da6734514643",
                 "address": "0x0000000000000000000000DUMMY_1",
                 "whitelist_status_id": 10,
                 "whitelist_status_description": "WHITELIST_REQUESTED",
@@ -224,16 +215,16 @@ describe('e2e test', () => {
         });
     });
 
-// Test for getAllDepositByAccountId
-it('getAllDepositByAccountId Test', async () => {
-  const response = await request(url).post('/').send(getAllDepositByAccountIdQuery);
+// Test for getAllDepositByAddress
+it('getAllDepositByAddress Test', async () => {
+  const response = await request(url).post('/').send(getAllDepositByAddressQuery);
   expect(response.errors).toBeUndefined();
   expect(response.body).toEqual({
     "data": {
-      "getAllDepositByAccountId": [
+      "getAllDepositByAddress": [
         {
           "id": "5543ad1d-ddee-4328-b9ff-f1ce4ea9a6b3",
-          "account_id": "f554c8f6-06e6-4386-88b9-59047adb6365",
+          "account_address": "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
           "commitment": "0x636f6d69745f4e4f4e4500000000000000000000000000000000000000000000",
           "market": "0x555344542e740000000000000000000000000000000000000000000000000000",
           "net_balance": 100,
@@ -241,7 +232,7 @@ it('getAllDepositByAccountId Test', async () => {
         },
         {
           "id": "6ec212aa-e1dc-4c55-9a05-9f17c2e06e95",
-          "account_id": "f554c8f6-06e6-4386-88b9-59047adb6365",
+          "account_address": "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
           "commitment": "0x636f6d69745f54574f5745454b53000000000000000000000000000000000000",
           "market": "0x555344542e740000000000000000000000000000000000000000000000000000",
           "net_balance": 200,
@@ -252,13 +243,13 @@ it('getAllDepositByAccountId Test', async () => {
   });
 });
 
-//Test for getAllLoanByAccountIdQuery
-it('getAllLoanByAccountIdQuery Test', async () => {
-  const response = await request(url).post('/').send(getAllLoanByAccountIdQuery);
+// //Test for getAllLoanByAddressQuery
+it('getAllLoanByAddressQuery Test', async () => {
+  const response = await request(url).post('/').send(getAllLoanByAddressQuery);
   expect(response.errors).toBeUndefined();
   expect(response.body).toEqual({
     "data": {
-      "getAllLoanByAccountId": [
+      "getAllLoanByAddress": [
         {
           "id": "16c2ec38-aa8e-4793-bbbb-0d0879cd3eaa",
           "loan_market": "0x555344542e740000000000000000000000000000000000000000000000000000",
@@ -272,14 +263,14 @@ it('getAllLoanByAccountIdQuery Test', async () => {
           "current_market": "0x555344542e740000000000000000000000000000000000000000000000000000",
           "is_swapped": false,
           "loan_status_id": 2,
-          "account_id": "f554c8f6-06e6-4386-88b9-59047adb6365"
+          "account_address": "0x317A69fA54E8e7113326E897DF6204ef2129a3A7"
         }
       ]
     }
   });
 });
 
-//Test for getAllLoansByStatusQuery
+// //Test for getAllLoansByStatusQuery
 it('getAllLoansByStatusQuery Test', async () => {
   const response = await request(url).post('/').send(getAllLoansByStatusQuery);
   expect(response.errors).toBeUndefined();
@@ -301,21 +292,21 @@ it('getAllLoansByStatusQuery Test', async () => {
           "loan_status_id": 2,
           "loan_status_description": "LOAN_CREATED",
           "loan_state": "ACTIVE",
-          "account_id": "f554c8f6-06e6-4386-88b9-59047adb6365"
+          "account_address": "0x317A69fA54E8e7113326E897DF6204ef2129a3A7"
         }
       ]
     }
   });
 });
 
-//login mutation test
+// login mutation test
 it('loginMutation Test', async () => {
   const response = await request(url).post('/').send(loginMutation);
   expect(response.errors).toBeUndefined();
   expect(response.body).toEqual({
     "data": {
       "login": {
-        "account_id": "f554c8f6-06e6-4386-88b9-59047adb6365"
+        "account_address": "0x317A69fA54E8e7113326E897DF6204ef2129a3A7"
       }
     }
   });

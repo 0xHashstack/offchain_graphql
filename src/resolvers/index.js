@@ -6,7 +6,6 @@ const ethers = require("ethers")
 const { getAccessToken, sendRefreshToken, createRefreshToken } = require('./../utils/index')
 const { AuthenticationError } = require('apollo-server');
 
-
 exports.resolvers = {
 
     Query: {
@@ -14,9 +13,8 @@ exports.resolvers = {
           if(context.loggedIn){
             try {
               const data = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({address:address}).first()
-              const waitlist_count_object = await db.count('id').from('accounts').where('whitelist_requested_timestamp','<=', data.whitelist_requested_timestamp).first()
+              const waitlist_count_object = await db.count('address').from('accounts').where('whitelist_requested_timestamp','<=', data.whitelist_requested_timestamp).first()
               const accountDetails = {
-                id: data.id,
                 address: data.address,
                 whitelist_status_id: data.whitelist_status_id,
                 whitelist_status_description: data.whitelist_status_description, 
@@ -51,11 +49,11 @@ exports.resolvers = {
           }
         },
 
-        getAllDepositByAccountId : async (parent, {account_id}, context) => {
+        getAllDepositByAddress : async (parent, {account_address}, context) => {
           if(context.loggedIn){
             try {
-              const data = await db.select('*').from('account_balance').where({account_id:account_id})
-              logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllDepositByAccountId), account_id : %s', account_id)
+              const data = await db.select('*').from('account_balance').where({account_address:account_address})
+              logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllDepositByAccountId), address : %s', account_address)
               return data;
             } catch (error) {
               logger.error('ERROR OCCURRED IN QUERY(getAllDepositByAccountId): %s', new Error(error))
@@ -66,14 +64,14 @@ exports.resolvers = {
           }
         },
 
-        getAllLoanByAccountId : async (parent, {account_id}, context) => {
+        getAllLoanByAddress : async (parent, {account_address}, context) => {
           if(context.loggedIn){
             try {
-              const data = await db.select('*').from('loans').where({account_id:account_id})
-              logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllLoanByAccountId), account_id : %s', account_id)
+              const data = await db.select('*').from('loans').where({account_address:account_address})
+              logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllLoanByAddress), address : %s', account_address)
               return data;
             } catch (error) {
-              logger.error('ERROR OCCURRED IN QUERY(getAllLoanByAccountId): %s', new Error(error))
+              logger.error('ERROR OCCURRED IN QUERY(getAllLoanByAddress): %s', new Error(error))
             }
           }
           else{
@@ -97,7 +95,7 @@ exports.resolvers = {
     Mutation : {
 
         login: async (parent, {signature ,address}, context) => {
-          let user = await db.select('id','address').from('accounts').where({address:address}).first()
+          let user = await db.select('address').from('accounts').where({address:address}).first()
           
           if (!user) {
             throw new Error("could not find user");
@@ -107,7 +105,10 @@ exports.resolvers = {
       
           if(valid){
             sendRefreshToken(context.res, createRefreshToken(user));
-            return {accessToken: getAccessToken(user), account_id: user.id};
+            return {
+              accessToken: getAccessToken(user),
+              account_address: user.address
+            };
           }
           else{
             throw new Error("Invalid Signature");
@@ -124,7 +125,6 @@ exports.resolvers = {
             }
             else{
               const accountDetails = {
-                id: uuid.v4(),
                 address: args.address,
                 whitelist_status_id: 2,
                 user_role: "USER",
@@ -143,12 +143,12 @@ exports.resolvers = {
         addDeposit : async (parent, args, context) => {
           if(context.loggedIn){
             try {
-              const accountId = args.account_id;
+              const address = args.address;
               const depositCommitment = args.commitment;
               const depositMarket = args.market;
               const depositAmount = args.amount;
               //find the deposit-id, if deposit already exist
-              const existingDeposit = await db.select('*').from('account_balance').where({account_id:accountId ,commitment:depositCommitment, market:depositMarket}).first();
+              const existingDeposit = await db.select('*').from('account_balance').where({address:address ,commitment:depositCommitment, market:depositMarket}).first();
             
               //If deposit already exists
               if(existingDeposit){
@@ -170,7 +170,7 @@ exports.resolvers = {
               else{
                 const deposit = { 
                   id: uuid.v4(),
-                  account_id: accountId,
+                  account_address: accountId,
                   commitment: depositCommitment,
                   market: depositMarket,
                   net_balance: depositAmount,
@@ -207,7 +207,7 @@ exports.resolvers = {
                 current_market: args.current_market,
                 is_swapped: false,
                 loan_status_id: 2,
-                account_id: args.account_id,
+                account_address: args.account_address,
                 created_at: new Date(),
                 updated_at: new Date()
               }
@@ -227,14 +227,14 @@ exports.resolvers = {
         updateWhitelistStatus : async (parent, args, context) => { 
           if(context.loggedIn){
             try {
-              await db.from('accounts').where({id:args.account_id})
+              await db.from('accounts').where({id:args.account_address})
               .update({
                 whitelist_status_id: args.whitelist_status_id,
                 updated_at: new Date()
               })
               logger.log('info','Updated whitelist status to whitelist_status_id: %s', args.whitelist_status_id)
               //returning the updated whitelist status  
-              return await db.select('*').from('accounts').where({id:args.account_id}).first()
+              return await db.select('*').from('accounts').where({id:args.account_address}).first()
             } catch (error) {
               logger.error('ERROR OCCURRED IN MUTATION(updateWhitelistStatus): %s', new Error(error))
             }
@@ -244,18 +244,18 @@ exports.resolvers = {
           }
         },
 
-        requestWhitelist : async (parent, {account_id}, context) => { 
+        requestWhitelist : async (parent, {account_address}, context) => { 
           if(context.loggedIn){
             try {
-              await db.from('accounts').where({id:account_id})
+              await db.from('accounts').where({id:account_address})
               .update({
                 whitelist_status_id: 10,
                 updated_at: new Date(),
                 whitelist_requested_timestamp: new Date()
               })
-              logger.log('info','Whitelist request for account_id: %s', account_id)
+              logger.log('info','Whitelist request for account_address: %s', account_address)
               //returning the updated whitelist status  
-              return await db.select('*').from('accounts').where({id:account_id}).first()
+              return await db.select('*').from('accounts').where({id:account_address}).first()
             } catch (error) {
               logger.error('ERROR OCCURRED IN MUTATION(requestWhitelist): %s', new Error(error))
             }

@@ -4,8 +4,6 @@ const logger = require("../../src/utils/logger");
 
 exports.addLoan = async (loanDetails) => {
     //console.log("addLoan Enter", loanDetails)
-    const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: loanDetails.account }).first()
-    //console.log(accountData)
     try {
         const loanData = {
             id: uuid.v4(),
@@ -22,7 +20,7 @@ exports.addLoan = async (loanDetails) => {
             current_market: loanDetails.loanMarket,
             is_swapped: false,
             loan_status_id: 2,
-            account_id: accountData.id,
+            account_address: loanDetails.account,
             created_at: new Date(),
             updated_at: new Date()
         }
@@ -44,9 +42,7 @@ exports.addLoan = async (loanDetails) => {
 
 exports.updateSwapLoanEventData = async (account, loanMarket, commitment, currentMarket, amount, isSwapped) =>{
     try {
-        const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: account }).first()
-
-        const loan = await db.from('loans').where({account_id: accountData.id, commitment:commitment, loan_market:loanMarket})
+        const loan = await db.from('loans').where({account_address: account, commitment:commitment, loan_market:loanMarket})
                 .update({
                   current_market: currentMarket,
                   current_amount: amount*1,
@@ -67,11 +63,9 @@ exports.updateSwapLoanEventData = async (account, loanMarket, commitment, curren
 exports.createWithdrawalPartialLoan = async (withdrawPartialLoanDetails) => {
     try {
         logger.log('info','createWithdrawalPartialLoan with : %s', withdrawPartialLoanDetails)
-        const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: withdrawPartialLoanDetails.account }).first()
-        
-        const loanDetails = await db.from('loans').where({account_id: accountData.id, commitment:withdrawPartialLoanDetails.commitment, loan_market:withdrawPartialLoanDetails.market}).first()
+        const loanDetails = await db.from('loans').where({account_address: withdrawPartialLoanDetails.account, commitment:withdrawPartialLoanDetails.commitment, loan_market:withdrawPartialLoanDetails.market}).first()
         const updatedCurrentAmount = 1*loanDetails.current_amount - 1*withdrawPartialLoanDetails.amount
-        await db.from('loans').where({account_id: accountData.id, commitment:withdrawPartialLoanDetails.commitment, loan_market:withdrawPartialLoanDetails.market})
+        await db.from('loans').where({account_address: withdrawPartialLoanDetails.account, commitment:withdrawPartialLoanDetails.commitment, loan_market:withdrawPartialLoanDetails.market})
             .update({
                 current_amount: updatedCurrentAmount*1,
                 updated_at: new Date()
@@ -86,10 +80,8 @@ exports.createWithdrawalPartialLoan = async (withdrawPartialLoanDetails) => {
 exports.loanRepaid = async (loanRepaidDetails) => {
     try {
         logger.log('info','loanRepaidDetails with : %s', loanRepaidDetails)
-        const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: loanRepaidDetails.account }).first()
-
         if(loanRepaidDetails.commitment === NONE){
-            await db.from('loans').where({account_id: accountData.id, commitment:loanRepaidDetails.commitment, loan_market:loanRepaidDetails.market})
+            await db.from('loans').where({account_address: loanRepaidDetails.account, commitment:loanRepaidDetails.commitment, loan_market:loanRepaidDetails.market})
             .update({
                 collateral_current_amount: 0,
                 current_amount: 0,
@@ -99,7 +91,7 @@ exports.loanRepaid = async (loanRepaidDetails) => {
             })
         }
         else{
-            await db.from('loans').where({account_id: accountData.id, commitment:loanRepaidDetails.commitment, market:loanRepaidDetails.market})
+            await db.from('loans').where({account_address: loanRepaidDetails.account, commitment:loanRepaidDetails.commitment, market:loanRepaidDetails.market})
             .update({
                 current_amount: 0,
                 current_market: market,
@@ -117,17 +109,16 @@ exports.loanRepaid = async (loanRepaidDetails) => {
 exports.createAddCollateralDeposit = async (collateralDepositDetails) => {
     try {
         logger.log('info','createAddCollateralDepositDetails with : %s', collateralDepositDetails)
-        const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: collateralDepositDetails.account }).first()
 
-        const loanDetails = await db.from('loans').where({account_id: accountData.id, commitment:collateralDepositDetails.commitment, loan_market:collateralDepositDetails.market}).first()
+        const loanDetails = await db.from('loans').where({account_address: collateralDepositDetails.account, commitment:collateralDepositDetails.commitment, loan_market:collateralDepositDetails.market}).first()
         const updatedCollateralAmount = 1*loanDetails.collateral_current_amount + 1*collateralDepositDetails.amount
-        const collateralDepositAdded = await db.from('loans').where({account_id: accountData.id, commitment:collateralDepositDetails.commitment, loan_market:collateralDepositDetails.market})
+        const collateralDepositAdded = await db.from('loans').where({account_address: collateralDepositDetails.account, commitment:collateralDepositDetails.commitment, loan_market:collateralDepositDetails.market})
                 .update({
                   collateral_current_amount: updatedCollateralAmount*1,
                   updated_at: new Date()
                 })
                 console.log(updatedCollateralAmount)
-        //return collateralDepositAdded;
+        
     } catch (error) {
         logger.log('error','createAddCollateralDeposit returned Error : %s', error)
         throw error;
@@ -137,11 +128,10 @@ exports.createAddCollateralDeposit = async (collateralDepositDetails) => {
 exports.createWithdrawCollateralDeposit = async (collateralWithdrawDetails) => {
     try {
         logger.log('info','createWithdrawCollateralDeposit with : %s', collateralWithdrawDetails)
-        const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: collateralWithdrawDetails.account }).first()
 
-        const loanDetails = await db.from('loans').where({account_id: accountData.id, commitment:collateralWithdrawDetails.commitment, loan_market:collateralWithdrawDetails.market}).first()
+        const loanDetails = await db.from('loans').where({account_address: collateralWithdrawDetails.account, commitment:collateralWithdrawDetails.commitment, loan_market:collateralWithdrawDetails.market}).first()
         const updatedCollateralAmount = 1*loanDetails.collateral_current_amount - 1*collateralWithdrawDetails.amount
-        const collateralDepositAdded = await db.from('loans').where({account_id: accountData.id, commitment:collateralWithdrawDetails.commitment, loan_market:collateralWithdrawDetails.market})
+        const collateralDepositAdded = await db.from('loans').where({account_address: collateralWithdrawDetails.account, commitment:collateralWithdrawDetails.commitment, loan_market:collateralWithdrawDetails.market})
                 .update({
                   collateral_current_amount: updatedCollateralAmount*1,
                   updated_at: new Date()

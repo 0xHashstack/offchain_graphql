@@ -18,8 +18,7 @@ exports.up = async function(knex) {
         table.enu('loan_state', ['ACTIVE', 'REPAID']).notNullable();
     })
     .createTable('accounts', table => {
-        table.uuid('id').primary().notNullable();
-        table.string('address').notNullable().unique();
+        table.string('address').primary().notNullable();
         table
         .integer('whitelist_status_id')
         .notNullable()
@@ -36,9 +35,9 @@ exports.up = async function(knex) {
         table.decimal('net_balance',50,20).notNullable();
         table.decimal('net_saving_interest',50,20).notNullable();
         table
-        .uuid('account_id')
+        .string('account_address')
         .notNullable()
-        .references('accounts.id');
+        .references('accounts.address');
         table.timestamp('created_at', { useTz: true }).notNullable();
         table.timestamp('updated_at', { useTz: true }).notNullable();
     })
@@ -60,9 +59,9 @@ exports.up = async function(knex) {
         .integer('loan_status_id')
         .notNullable()
         .references('loan_status_lookup.loan_status_id');
-        table.uuid('account_id')
+        table.string('account_address')
         .notNullable()
-        .references('accounts.id');
+        .references('accounts.address');
         table.timestamp('created_at', { useTz: true }).notNullable();
         table.timestamp('updated_at', { useTz: true }).notNullable();
     })
@@ -79,9 +78,9 @@ exports.up = async function(knex) {
         .notNullable()
         .references('loans.id');
         table
-        .uuid('account_id')
+        .string('account_address')
         .notNullable()
-        .references('accounts.id');
+        .references('accounts.address');
         table.timestamp('created_at', { useTz: true }).notNullable();
         table.timestamp('updated_at', { useTz: true }).notNullable();
     })

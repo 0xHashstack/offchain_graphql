@@ -32,7 +32,7 @@ function isLoanToBeLiquidated(price){
         current_market: "0x555344542e740000000000000000000000000000000000000000000000000000",
         is_swapped: false,
         loan_status_id: 2,
-        account_id: "f554c8f6-06e6-4386-88b9-59047adb6365"
+        account_address: "f554c8f6-06e6-4386-88b9-59047adb6365"
     }
 
     if(debt_category===1){

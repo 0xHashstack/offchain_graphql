@@ -52,9 +52,11 @@ const decimalBasedOnMarketHash = {
 
 const epochLength = 3
 
-// const CT_WHITELISTING=259200000
-
 const CT_WHITELISTING=604800000
+
+const JWT_EXPIRY_TIME =  900 // 15 minutes
+
+const REFRESH_TOKEN_EXPIRY_TIME = "28d" // 28 days expiry
 
 module.exports = {
     rpcURLs,
@@ -67,5 +69,7 @@ module.exports = {
     epochLength,
     decimalBasedOnMarket,
     decimalBasedOnMarketHash,
-    CT_WHITELISTING
+    CT_WHITELISTING,
+    JWT_EXPIRY_TIME,
+    REFRESH_TOKEN_EXPIRY_TIME
 }

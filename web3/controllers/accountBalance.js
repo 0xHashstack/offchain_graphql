@@ -13,7 +13,6 @@ exports.createNewUserAccount = async (address) => {
         }
         else{
           const accountDetails = {
-            id: uuid.v4(),
             address: address,
             whitelist_status_id: 2,
             user_role: "USER",
@@ -33,7 +32,6 @@ exports.createNewDeposit = async (depositDetails) => {
     logger.log('info',"Initializing createNewDeposit %s", depositDetails)
 
     try {
-        const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: depositDetails.account }).first()
         const newDepositDetails = {
             id: uuid.v4(),
             market: depositDetails.market,
@@ -41,13 +39,12 @@ exports.createNewDeposit = async (depositDetails) => {
             net_balance: depositDetails.amount,
             created_at: new Date(),
             updated_at: new Date(),
-            account_id: accountData.id,
+            account_address: depositDetails.account,
             net_saving_interest: 0.40404,
         }
         // console.log('info','createNewDeposit Event with : %s', newDepositDetails)
         const depositAdded = await db.from('account_balance').insert(newDepositDetails)
         logger.log('info', 'createNewDeposit Event with : %s', depositAdded)
-
     } catch (error) {
         console.error('ERROR OCCURRED IN EVENT(createNewDeposit): %s', new Error(error))
     }
@@ -56,8 +53,7 @@ exports.createNewDeposit = async (depositDetails) => {
 exports.createWithdrawalDeposit = async (withdrawalDetails) => {
     try {
         logger.log('info',"Initializing createWithdrawalDeposit %s", withdrawalDetails)
-        const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: withdrawalDetails.account }).first()
-        const existingDeposit = await db.select('*').from('account_balance').where({account_id: accountData.id, commitment:withdrawalDetails.commitment, market: withdrawalDetails.market}).first();
+        const existingDeposit = await db.select('*').from('account_balance').where({account_address: withdrawalDetails.account, commitment:withdrawalDetails.commitment, market: withdrawalDetails.market}).first();
 
         current_net_balance = existingDeposit.net_balance
         updated_net_balance = current_net_balance*1 - withdrawalDetails.amount*1
@@ -81,8 +77,7 @@ exports.addToDeposit = async (addDepositDetails) => {
     logger.log('info',"Initializing createWithdrawalDeposit %s", addDepositDetails)
 
     try {
-        const accountData = await db.select('*').from('accounts').join('whitelist_status_lookup', 'whitelist_status_lookup.whitelist_status_id', '=', 'accounts.whitelist_status_id').where({ address: addDepositDetails.account }).first()
-        const existingDeposit = await db.select('*').from('account_balance').where({account_id: accountData.id ,commitment:addDepositDetails.commitment, market: addDepositDetails.market}).first();
+        const existingDeposit = await db.select('*').from('account_balance').where({account_address: addDepositDetails.account ,commitment:addDepositDetails.commitment, market: addDepositDetails.market}).first();
 
         current_net_balance = existingDeposit.net_balance
         updated_net_balance = current_net_balance*1 + addDepositDetails.amount*1

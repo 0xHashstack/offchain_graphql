@@ -62,7 +62,6 @@ exports.up = async function(knex) {
 
     // adding dummy data to accounts table
     await knex('accounts').insert({
-      id: "f554c8f6-06e6-4386-88b9-59047adb6365",
       address: "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
       whitelist_status_id: 2,
       user_role: "DUMMY_USER",
@@ -71,7 +70,6 @@ exports.up = async function(knex) {
       whitelist_requested_timestamp: new Date()
     })
     await knex('accounts').insert({
-      id: "a8331bd8-fa9d-49ae-aa1e-da6734514643",
       address: "0x0000000000000000000000DUMMY_1",
       whitelist_status_id: 10,
       user_role: "DUMMY_USER",
@@ -80,7 +78,6 @@ exports.up = async function(knex) {
       whitelist_requested_timestamp: new Date()
     })
     await knex('accounts').insert({
-      id: "f1f791d2-3f61-49cd-8013-6b94c42d3ddf",
       address: "0x0000000000000000000000DUMMY_2",
       whitelist_status_id: 2,
       user_role: "DUMMY_USER",
@@ -89,7 +86,6 @@ exports.up = async function(knex) {
       whitelist_requested_timestamp: new Date()
     })
     await knex('accounts').insert({
-      id: "a731640c-5b22-496b-86fc-85e630b2155a",
       address: "0x0000000000000000000000DUMMY_3",
       whitelist_status_id: 2,
       user_role: "DUMMY_USER",
@@ -101,7 +97,7 @@ exports.up = async function(knex) {
       // adding dummy account_balance
       await knex('account_balance').insert({
         id: "5543ad1d-ddee-4328-b9ff-f1ce4ea9a6b3",
-        account_id: "f554c8f6-06e6-4386-88b9-59047adb6365",
+        account_address: "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
         commitment: "0x636f6d69745f4e4f4e4500000000000000000000000000000000000000000000",
         market: "0x555344542e740000000000000000000000000000000000000000000000000000",
         net_balance: 100,
@@ -111,7 +107,7 @@ exports.up = async function(knex) {
       })
       await knex('account_balance').insert({
         id: "6ec212aa-e1dc-4c55-9a05-9f17c2e06e95",
-        account_id: "f554c8f6-06e6-4386-88b9-59047adb6365",
+        account_address: "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
         commitment: "0x636f6d69745f54574f5745454b53000000000000000000000000000000000000",
         market: "0x555344542e740000000000000000000000000000000000000000000000000000",
         net_balance: 200,
@@ -136,7 +132,7 @@ exports.up = async function(knex) {
         current_market: "0x555344542e740000000000000000000000000000000000000000000000000000",
         is_swapped: false,
         loan_status_id: 2,
-        account_id: "f554c8f6-06e6-4386-88b9-59047adb6365",
+        account_address: "0x317A69fA54E8e7113326E897DF6204ef2129a3A7",
         created_at: new Date(),
         updated_at: new Date()
       })
