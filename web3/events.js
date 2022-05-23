@@ -35,61 +35,61 @@ const listenToEvents = (app) => {
         diamondAddress
     )
 
-    NewDepositEvent(depositContract);
-    WithdrawalDepositEvent(depositContract);
-    AddToDepositEvent(depositContract);
-    NewLoanEvent(loanContract1);
-    SwapLoanEvent(partialLoanContract);
-    WithdrawPartialLoanDepositEvent(partialLoanContract);
-    RepaidLoanEvent(loanContract2);
-    AddCollateralEvent(partialLoanContract);
-    WithdrawCollateralEvent(partialLoanContract);
-    LiquidationEvent(liquidationContract)
+    // NewDepositEvent(depositContract);
+    // WithdrawalDepositEvent(depositContract);
+    // AddToDepositEvent(depositContract);
+    // NewLoanEvent(loanContract1);
+    // SwapLoanEvent(partialLoanContract);
+    // WithdrawPartialLoanDepositEvent(partialLoanContract);
+    // RepaidLoanEvent(loanContract2);
+    // AddCollateralEvent(partialLoanContract);
+    // WithdrawCollateralEvent(partialLoanContract);
+    // LiquidationEvent(liquidationContract)
+
     return app
 }
+
+// let test1 = {
+//     account: "0x12bdAC56C03FA27687c6f35E60fC36BecB00850e",
+//     market: "0x",
+//     commitment: "0x0000000000000000000000000000000000000000000000000000004508c6f500",
+//     amount: 100000000000000000000000000,
+// }
+
+// let test2 = {
+//     "account": "0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
+//     "loanMarket": "0x555344432e740000000000000000000000000000000000000000000000000000",
+//     "commitment": "0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000",
+//     "loanAmount": "300000000000",
+//     "collateralMarket": "0x555344432e740000000000000000000000000000000000000000000000000000",
+//     "collateralAmount": "200000000000",
+//     "loanId": "2",
+//     "feePaid": "300000000",
+//     "time": "1652860397",
+//     "debtCategory": 2,
+//     "cdr": 0.6666666666666666
+// }
+
+// let test3 = {
+//     "account":"0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
+//     "id":2,
+//     "amount":"1234",
+//     "market":"0x555344432e740000000000000000000000000000000000000000000000000000",
+//     "commitment":"0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000"
+// }
+
+// let test4 = {
+//     "account":"0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
+//     "loanMarket":"0x555344432e740000000000000000000000000000000000000000000000000000",
+//     "commitment":"0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000",
+//     "isSwapped":true,
+//     "currentMarket":"0x555344542e740000000000000000000000000000000000000000000000000000",
+//     "amount": 23233
+// }
 
 ////////////////////////////////////////////////////////////////////////
 //////////////////////// DEPOSIT EVENTS ////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
-let test1 = {
-    account: "0x12bdAC56C03FA27687c6f35E60fC36BecB00850e",
-    market: "0x",
-    commitment: "0x0000000000000000000000000000000000000000000000000000004508c6f500",
-    amount: 100000000000000000000000000,
-}
-
-let test2 = {
-    "account": "0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
-    "loanMarket": "0x555344432e740000000000000000000000000000000000000000000000000000",
-    "commitment": "0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000",
-    "loanAmount": "300000000000",
-    "collateralMarket": "0x555344432e740000000000000000000000000000000000000000000000000000",
-    "collateralAmount": "200000000000",
-    "loanId": "2",
-    "feePaid": "300000000",
-    "time": "1652860397",
-    "debtCategory": 2,
-    "cdr": 0.6666666666666666
-}
-
-let test3 = {
-    "account":"0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
-    "id":2,
-    "amount":"1234",
-    "market":"0x555344432e740000000000000000000000000000000000000000000000000000",
-    "commitment":"0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000"
-}
-
-let test4 = {
-    "account":"0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
-    "loanMarket":"0x555344432e740000000000000000000000000000000000000000000000000000",
-    "commitment":"0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000",
-    "isSwapped":true,
-    "currentMarket":"0x555344542e740000000000000000000000000000000000000000000000000000",
-    "amount": 23233
-}
-
 
 const NewDepositEvent = (depositContract) => {
     console.log("Listening to NewDeposit event");
