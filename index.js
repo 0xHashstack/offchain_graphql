@@ -24,7 +24,7 @@ const CORS_OPTIONS = {
   origin: [ 
             'https://testnet.hashstack.finance',
             'https://stagingnet.hashstack.finance', 
-            'https://devapi.hashstack.finance',
+            'https://testgql.hashstack.finance',
             `http://localhost:${PORT}`,
             'http://localhost:3000', 
             'http://localhost:3001'
@@ -47,7 +47,7 @@ async function startApolloServer() {
   app.get("/", (_req, res) => res.send("Welcome to Hashstack Finance"));
   
   //"liquidable_loan end-point returns all the loans that need to be liquidated"
-  app.post("/liquidable_loan", async (req, res) => {
+  app.get("/liquidable_loan", async (req, res) => {
     const web3 = getWeb3();
     let liquidationContract = new web3.eth.Contract(
         Liquidator,
