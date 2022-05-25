@@ -24,7 +24,7 @@ const CORS_OPTIONS = {
   origin: [ 
             'https://testnet.hashstack.finance',
             'https://stagingnet.hashstack.finance', 
-            'https://devapi.hashstack.finance',
+            'https://testgql.hashstack.finance',
             `http://localhost:${PORT}`,
             'http://localhost:3000', 
             'http://localhost:3001'
