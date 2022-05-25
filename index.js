@@ -13,7 +13,11 @@ const http = require('http');
 const cookieParser = require("cookie-parser")
 const jwt = require('jsonwebtoken')
 const db = require('./src/database/db')
-
+const { listenToEvents } = require('./web3/events')
+const { getLiquidadableLoan } = require('./web3/liquidableLoanMethod');
+const { getWeb3 } = require("./web3/transaction");
+const { diamondAddress } = require("./constants/constants");
+const Liquidator = require('./blockchain/abis/Liquidator.json');
 
 const PORT = process.env.PORT || 4000;
 const CORS_OPTIONS = {
@@ -42,6 +46,18 @@ async function startApolloServer() {
   
   app.get("/", (_req, res) => res.send("Welcome to Hashstack Finance"));
   
+  //"liquidable_loan end-point returns all the loans that need to be liquidated"
+  app.post("/liquidable_loan", async (req, res) => {
+    const web3 = getWeb3();
+    let liquidationContract = new web3.eth.Contract(
+        Liquidator,
+        diamondAddress
+    )
+    var responseData = await getLiquidadableLoan(liquidationContract)
+    return res.send(responseData);
+  });
+
+
   app.post("/refresh_token", async (req, res) => {
     const token = req.cookies.jid;
     if (!token) {
@@ -56,7 +72,7 @@ async function startApolloServer() {
     }
     // token is valid and
     // we can send back an access token
-    const user = await db.select('id','address').from('accounts').where({address: payload.address}).first()
+    const user = await db.select('address').from('accounts').where({address: payload.address}).first()
     if (!user) {
       return res.send({ ok: false, accessToken: "" });
     }
@@ -65,7 +81,7 @@ async function startApolloServer() {
     return res.send({ ok: true, accessToken: getAccessToken(user) });
   });
 
-  
+  listenToEvents(app);
   
   const httpServer = http.createServer(app);
   const server = new ApolloServer({ 
