@@ -11,7 +11,7 @@ exports.getLiquidadableLoan = async(liquidationContract) => {
     for(let i=INITIAL_INDEX;i<FINAL_INDEX;i=i+10){
         await liquidationContract.methods.liquidableLoans(i).call((err, result) => { 
             if(result){
-                for(var j=0;j<100;j++){
+                for(let j=0;j<100;j++){
                     if(result.loanOwner[j]!='0x0000000000000000000000000000000000000000'){
                         var loanDetail = {
                             'loan_market': result.loanMarket[j],

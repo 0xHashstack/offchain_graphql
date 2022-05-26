@@ -53,10 +53,10 @@ exports.resolvers = {
           if(true || context.loggedIn){
             try {
               const data = await db.select('*').from('account_balance').where({account_address:account_address})
-              logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllDepositByAccountId), address : %s', account_address)
+              logger.log('info','SUCCESSFULLY EXECUTED QUERY(getAllDepositByAddress), address : %s', account_address)
               return data;
             } catch (error) {
-              logger.error('ERROR OCCURRED IN QUERY(getAllDepositByAccountId): %s', new Error(error))
+              logger.error('ERROR OCCURRED IN QUERY(getAllDepositByAddress): %s', new Error(error))
             }
           }
           else{
@@ -170,7 +170,7 @@ exports.resolvers = {
               else{
                 const deposit = { 
                   id: uuid.v4(),
-                  account_address: accountId,
+                  account_address: address,
                   commitment: depositCommitment,
                   market: depositMarket,
                   net_balance: depositAmount,
