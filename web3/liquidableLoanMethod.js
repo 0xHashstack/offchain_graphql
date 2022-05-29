@@ -7,7 +7,7 @@ const logger = require("../src/utils/logger");
 exports.getLiquidadableLoan = async(liquidationContract) => {
     let liquidadableLoanData = []
     const INITIAL_INDEX = 1
-    const FINAL_INDEX = 1000
+    const FINAL_INDEX = 980
     for(let i=INITIAL_INDEX;i<FINAL_INDEX;i=i+10){
         await liquidationContract.methods.liquidableLoans(i).call((err, result) => { 
             if(result){

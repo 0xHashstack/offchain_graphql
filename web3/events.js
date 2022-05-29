@@ -6,11 +6,11 @@ const Loan = require('../blockchain/abis/Loan.json');
 const Liquidator = require('../blockchain/abis/Liquidator.json');
 const { getWeb3 } = require("./transaction");
 const { default: BigNumber } = require('bignumber.js');
-const { Console } = require("winston/lib/winston/transports");
 const { createNewUserAccount, createNewDeposit, addToDeposit, createWithdrawalDeposit } = require('./controllers/accountBalance');
-const { addLoan, updateSwapLoanEventData, loanRepaid, createAddCollateralDeposit, createWithdrawCollateralDeposit, createWithdrawalPartialLoan } = require('./controllers/loanController'); 
+const { createNewLoan, updateSwapLoanEventData, loanRepaid, createAddCollateralDeposit, createWithdrawCollateralDeposit, createWithdrawalPartialLoan } = require('./controllers/loanController');
 const logger = require("../src/utils/logger");
 const db = require('../src/database/db')
+const { ReconcilePastDepositDataInit, ReconcilePastLoanDataInit } = require('./reconcilation/index')
 
 const listenToEvents = (app) => {
     const web3 = getWeb3();
@@ -35,6 +35,12 @@ const listenToEvents = (app) => {
         diamondAddress
     )
 
+
+    // TO DO: Once CDR is fixed from blockchain side, uncomment this code
+
+    // ReconcilePastLoanDataInit();
+    // ReconcilePastDepositDataInit();
+
     // NewDepositEvent(depositContract);
     // WithdrawalDepositEvent(depositContract);
     // AddToDepositEvent(depositContract);
@@ -49,44 +55,6 @@ const listenToEvents = (app) => {
     return app
 }
 
-// let test1 = {
-//     account: "0x12bdAC56C03FA27687c6f35E60fC36BecB00850e",
-//     market: "0x",
-//     commitment: "0x0000000000000000000000000000000000000000000000000000004508c6f500",
-//     amount: 100000000000000000000000000,
-// }
-
-// let test2 = {
-//     "account": "0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
-//     "loanMarket": "0x555344432e740000000000000000000000000000000000000000000000000000",
-//     "commitment": "0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000",
-//     "loanAmount": "300000000000",
-//     "collateralMarket": "0x555344432e740000000000000000000000000000000000000000000000000000",
-//     "collateralAmount": "200000000000",
-//     "loanId": "2",
-//     "feePaid": "300000000",
-//     "time": "1652860397",
-//     "debtCategory": 2,
-//     "cdr": 0.6666666666666666
-// }
-
-// let test3 = {
-//     "account":"0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
-//     "id":2,
-//     "amount":"1234",
-//     "market":"0x555344432e740000000000000000000000000000000000000000000000000000",
-//     "commitment":"0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000"
-// }
-
-// let test4 = {
-//     "account":"0x18740bf6AbeDB6bA75c00EEF866ACc269E437c7e",
-//     "loanMarket":"0x555344432e740000000000000000000000000000000000000000000000000000",
-//     "commitment":"0x636f6d69745f4f4e454d4f4e5448000000000000000000000000000000000000",
-//     "isSwapped":true,
-//     "currentMarket":"0x555344542e740000000000000000000000000000000000000000000000000000",
-//     "amount": 23233
-// }
-
 ////////////////////////////////////////////////////////////////////////
 //////////////////////// DEPOSIT EVENTS ////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -95,12 +63,15 @@ const NewDepositEvent = (depositContract) => {
     console.log("Listening to NewDeposit event");
     depositContract.events.NewDeposit({}, async (error, event) => {
         try {
-            createNewUserAccount(event.returnValues.account)
+            //createNewUserAccount(event.returnValues.account)
             if (!error) {
-                console.log("******** NEW DEPOSIT EVENT ********",event.returnValues)
-                logger.log('info', 'NewDepositEvent event.returnValues Called with : %s', JSON.stringify(event.returnValues))
-                logger.log('info', 'NewDepositEvent Called with : %s', JSON.stringify(event))
-                await createNewDeposit(event.returnValues)
+                console.log("******** NEW DEPOSIT EVENT ********")
+                logger.log('info', 'NewDeposit event event.returnValues Called with : %s', JSON.stringify(event.returnValues))
+                logger.log('info', 'NewDeposit event Called with : %s', JSON.stringify(event))
+
+                const { account, market, commitment, amount } = event.returnValues;
+                const transaction_hash = event.transactionHash;
+                await createNewDeposit(account, market, commitment, amount, transaction_hash)
             } else {
                 console.error(error);
             }
@@ -113,41 +84,45 @@ const NewDepositEvent = (depositContract) => {
 }
 
 const WithdrawalDepositEvent = (depositContract) => {
-    console.log("Listening to WithdrawalDepositEvent event"); 
+    console.log("Listening to WithdrawalDepositEvent event");
     depositContract.events.DepositWithdrawal({}, async (error, event) => {
         try {
             if (!error) {
                 console.log("****** WITHDRAW DEPOSIT EVENT ********")
                 console.log(event.returnValues)
-                logger.log('info','WithdrawalDepositEvent event.returnValues with : %s', JSON.stringify(event.returnValues))
-                logger.log('info','WithdrawalDepositEvent event with : %s', JSON.stringify(event))
-                await createWithdrawalDeposit(event.returnValues) 
+                logger.log('info', 'WithdrawalDepositEvent event.returnValues with : %s', JSON.stringify(event.returnValues))
+                logger.log('info', 'WithdrawalDepositEvent event with : %s', JSON.stringify(event))
+                const { account, market, commitment, depositId, amount, fee } = event.returnValues;
+                const transaction_hash = event.transactionHash;
+                await createWithdrawalDeposit(account, market, commitment, amount, fee, transaction_hash)
             } else {
                 console.error(error);
             }
         }
         catch (err) {
-            logger.log('error','WithdrawalDepositEvent event returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'WithdrawalDepositEvent event returned Error : %s', JSON.stringify(err))
             console.error(err);
         }
     })
 }
 
 const AddToDepositEvent = (depositContract) => {
-    console.log("Listening to AddToDepositEvent event"); 
+    console.log("Listening to AddToDepositEvent event");
     depositContract.events.DepositAdded({}, async (error, event) => {
         try {
             if (!error) {
                 console.log("****** DEPOSIT ADDED EVENT ********")
                 console.log(event.returnValues)
-                logger.log('info','AddToDepositEvent Called with : %s', JSON.stringify(event))
-                await addToDeposit(event.returnValues)
+                logger.log('info', 'AddToDepositEvent Called with : %s', JSON.stringify(event))
+                const { account, market, commitment, amount, depositId } = event.returnValues;
+                const transaction_hash = event.transactionHash;
+                await addToDeposit(account, market, commitment, amount, transaction_hash)
             } else {
                 console.error(error);
             }
         }
         catch (err) {
-            logger.log('error','AddToDepositEvent returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'AddToDepositEvent returned Error : %s', JSON.stringify(err))
             console.error(err);
         }
     })
@@ -160,14 +135,14 @@ const AddToDepositEvent = (depositContract) => {
 const NewLoanEvent = (loanContract) => {
     console.log("Listening to NewLoanEvent")
     loanContract.events.NewLoan({}, async (error, event) => {
-        
+
         try {
-            logger.log('info','NewLoanEvent Called with : %s', JSON.stringify(event.returnValues))
+            logger.log('info', 'NewLoanEvent Called with : %s', JSON.stringify(event.returnValues))
             await createNewUserAccount(event.returnValues.account)
             if (!error) {
                 console.log(event.returnValues)
                 let loanDetails = event.returnValues;
-                let cdr = BigNumber(loanDetails.collateralAmount) / BigNumber(loanDetails.loanAmount);
+                const cdr = BigNumber(loanDetails.collateralAmount) / BigNumber(loanDetails.loanAmount);
                 if (cdr >= 1) {
                     loanDetails["debtCategory"] = 1;
                 } else if (cdr >= 0.5 && cdr < 1) {
@@ -176,15 +151,17 @@ const NewLoanEvent = (loanContract) => {
                     loanDetails["debtCategory"] = 3;
                 }
                 loanDetails["cdr"] = cdr;
-                await addLoan(loanDetails);
-                logger.log('info','NewLoanEvent success with : %s', JSON.stringify(loanDetails))
+                const { account, loanMarket, commitment, loanAmount, collateralMarket, collateralAmount, debtCategory } = loanDetails;
+                const transaction_hash = event.transactionHash;
+                await createNewLoan(account, loanMarket, commitment, loanAmount, collateralMarket, collateralAmount, debtCategory, cdr, transaction_hash);
+                logger.log('info', 'NewLoanEvent success with : %s', JSON.stringify(loanDetails))
             } else {
                 console.error(error);
             }
         }
         catch (err) {
             console.error(err);
-            logger.log('error','NewLoanEvent returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'NewLoanEvent returned Error : %s', JSON.stringify(err))
         }
     })
 }
@@ -193,38 +170,41 @@ const NewLoanEvent = (loanContract) => {
 const SwapLoanEvent = (libOpenContract) => {
     console.log("Listening to SwapLoan event")
     libOpenContract.events.MarketSwapped({}, async (error, event) => {
-        logger.log('info','SwapLoanEvent Called with : %s', JSON.stringify(event))
+        logger.log('info', 'SwapLoanEvent Called with : %s', JSON.stringify(event))
 
         if (!error) {
             const { account, loanMarket, commitment, currentMarket, amount, isSwapped } = event.returnValues;
-            
+            const transaction_hash = event.transactionHash;
             try {
-                await updateSwapLoanEventData(account, loanMarket, commitment, currentMarket, amount, isSwapped);
+                await updateSwapLoanEventData(account, loanMarket, commitment, currentMarket, amount, isSwapped, transaction_hash);
             } catch (error) {
                 console.error(error);
             }
         } else {
             console.error(error);
-            logger.log('error','SwapLoanEvent returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'SwapLoanEvent returned Error : %s', JSON.stringify(err))
         }
     })
 }
 
 const WithdrawPartialLoanDepositEvent = (loanContract) => {
-    console.log("Listening to WithdrawPartialLoanDepositEvent event"); 
+    console.log("Listening to WithdrawPartialLoanDepositEvent event");
     loanContract.events.WithdrawPartialLoan({}, async (error, event) => {
         try {
             if (!error) {
                 console.log("****** WithdrawPartialLoan ********")
-                logger.log('info','WithdrawPartialLoan Called with : %s', JSON.stringify(event.returnValues))
-                logger.log('info','WithdrawPartialLoan Called with : %s', JSON.stringify(event))
-                await createWithdrawalPartialLoan(event.returnValues)
+                logger.log('info', 'WithdrawPartialLoan Called with : %s', JSON.stringify(event.returnValues))
+                logger.log('info', 'WithdrawPartialLoan Called with : %s', JSON.stringify(event))
+
+                const { account, amount, market, commitment } = event.returnValues;
+                const transaction_hash = event.transactionHash;
+                await createWithdrawalPartialLoan(account, amount, market, commitment, transaction_hash)
             } else {
                 console.error(error);
             }
         }
         catch (err) {
-            logger.log('error','WithdrawPartialLoanDepositEvent returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'WithdrawPartialLoanDepositEvent returned Error : %s', JSON.stringify(err))
             console.error(err);
         }
     })
@@ -236,15 +216,17 @@ const RepaidLoanEvent = (loanExtContract) => {
         try {
             if (!error) {
                 console.log("****** RepaidLoanEvent ********")
-                logger.log('info','RepaidLoanEvent Called with : %s', JSON.stringify(event))
-                logger.log('info','RepaidLoanEvent Called with event.returnValues : %s', JSON.stringify(event.returnValues))
-                await loanRepaid(event.returnValues)
+                logger.log('info', 'RepaidLoanEvent Called with : %s', JSON.stringify(event))
+                logger.log('info', 'RepaidLoanEvent Called with event.returnValues : %s', JSON.stringify(event.returnValues))
+                const { account, market, commitment, amount, repaidAmount } = event.returnValues
+                const transaction_hash = event.transactionHash;
+                await loanRepaid(account, market, commitment, amount, repaidAmount, transaction_hash)
             } else {
                 console.error(error);
             }
         }
         catch (err) {
-            logger.log('error','RepaidLoanEvent returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'RepaidLoanEvent returned Error : %s', JSON.stringify(err))
             console.error(err);
         }
     })
@@ -256,16 +238,18 @@ const AddCollateralEvent = (partialLoanContract) => {
         try {
             if (!error) {
                 console.log("****** AddCollateralEvent ********")
-                logger.log('info','AddCollateralEvent_str Called with : %s', JSON.stringify(event))
-                logger.log('info','AddCollateralEvent_str Called with event.returnValues : %s', JSON.stringify(event.returnValues))
-                
-                await createAddCollateralDeposit(event.returnValues) //
+                logger.log('info', 'AddCollateralEvent_str Called with : %s', JSON.stringify(event))
+                logger.log('info', 'AddCollateralEvent_str Called with event.returnValues : %s', JSON.stringify(event.returnValues))
+
+                const { account, market, commitment, amount } = event.returnValues;
+                const transaction_hash = event.transactionHash;
+                await createAddCollateralDeposit(account, market, commitment, amount, transaction_hash)
             } else {
                 console.error(error);
             }
         }
         catch (err) {
-            logger.log('error','AddCollateralEvent returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'AddCollateralEvent returned Error : %s', JSON.stringify(err))
             console.error(err);
         }
     })
@@ -277,15 +261,18 @@ const WithdrawCollateralEvent = (partialLoanContract) => {
         try {
             if (!error) {
                 console.log("****** WithdrawCollateralEvent ********")
-                logger.log('info','WithdrawCollateralEvent_str Called with : %s', JSON.stringify(event))
-                logger.log('info','WithdrawCollateralEvent_str Called with event.returnValues : %s', JSON.stringify(event.returnValues))
-                await createWithdrawCollateralDeposit(event.returnValues)
+                logger.log('info', 'WithdrawCollateralEvent_str Called with : %s', JSON.stringify(event))
+                logger.log('info', 'WithdrawCollateralEvent_str Called with event.returnValues : %s', JSON.stringify(event.returnValues))
+
+                const { account, market, commitment, amount } = event.returnValues;
+                const transaction_hash = event.transactionHash;
+                await createWithdrawCollateralDeposit(account, market, commitment, amount, transaction_hash)
             } else {
                 console.error(error);
             }
         }
         catch (err) {
-            logger.log('error','WithdrawCollateralEvent returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'WithdrawCollateralEvent returned Error : %s', JSON.stringify(err))
             console.error(err);
         }
     })
@@ -297,15 +284,16 @@ const LiquidationEvent = (liquidationContract) => {
         try {
             if (!error) {
                 console.log("****** LiquidationEvent ********")
-                logger.log('info','LiquidationEvent_str Called with : %s', JSON.stringify(event))
-                logger.log('info','LiquidationEvent_str Called with event.returnValues : %s', JSON.stringify(event.returnValues))
+                logger.log('info', 'LiquidationEvent Called with : %s', JSON.stringify(event))
+                logger.log('info', 'LiquidationEvent Called with event.returnValues : %s', JSON.stringify(event.returnValues))
+                const transaction_hash = event.transactionHash;
                 // add a event that should be performed on liquidation 
             } else {
                 console.error(error);
             }
         }
         catch (err) {
-            logger.log('error','WithdrawCollateralEvent returned Error : %s', JSON.stringify(err))
+            logger.log('error', 'LiquidationEvent returned Error : %s', JSON.stringify(err))
             console.error(err);
         }
     })
