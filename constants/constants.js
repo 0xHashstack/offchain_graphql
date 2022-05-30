@@ -8,6 +8,8 @@ const diamondAddress = "0x12bdAC56C03FA27687c6f35E60fC36BecB00850e";
 
 const chain = "0x61"
 
+const SUBGRAPH_RECONCILIATION_URL = "https://api.thegraph.com/subgraphs/name/sakrock007/reconciliation"
+
 const symbols = {
     "0x555344542e740000000000000000000000000000000000000000000000000000": "USDT.t",
     "0x555344432e740000000000000000000000000000000000000000000000000000": "USDC.t",
@@ -62,6 +64,7 @@ module.exports = {
     rpcURLs,
     diamondAddress,
     chain,
+    SUBGRAPH_RECONCILIATION_URL,
     symbols,
     commitmentHash,
     APYFromHash,

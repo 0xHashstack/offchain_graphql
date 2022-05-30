@@ -14,7 +14,7 @@ const sendTransaction = async (diamondAddress, contract, method, ...params) => {
     const privateKey = process.env.PRIVATEKEY;
 
     if (!address || !privateKey) {
-        throw new Error("Address/Private key not availabe in environment");
+        throw new Error("Address/Private key not available in environment");
     }
 
     const web3 = getWeb3();
