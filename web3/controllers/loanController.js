@@ -25,6 +25,7 @@ exports.createNewLoan = async (account, loanMarket, commitment, loanAmount, coll
                 is_swapped: false,
                 loan_status_id: 2,
                 account_address: account,
+                loan_liquidation_id: 2,
                 created_at: new Date(),
                 updated_at: new Date()
             }

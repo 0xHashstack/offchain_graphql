@@ -62,6 +62,9 @@ exports.up = async function(knex) {
         table.string('account_address')
         .notNullable()
         .references('accounts.address');
+        table
+        .integer('loan_liquidation_id')
+        .notNullable();
         table.timestamp('created_at', { useTz: true }).notNullable();
         table.timestamp('updated_at', { useTz: true }).notNullable();
     })

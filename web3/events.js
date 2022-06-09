@@ -41,15 +41,15 @@ const listenToEvents = (app) => {
     // ReconcilePastLoanDataInit();
     // ReconcilePastDepositDataInit();
 
-    // NewDepositEvent(depositContract);
-    // WithdrawalDepositEvent(depositContract);
-    // AddToDepositEvent(depositContract);
-    // NewLoanEvent(loanContract1);
-    // SwapLoanEvent(partialLoanContract);
-    // WithdrawPartialLoanDepositEvent(partialLoanContract);
-    // RepaidLoanEvent(loanContract2);
-    // AddCollateralEvent(partialLoanContract);
-    // WithdrawCollateralEvent(partialLoanContract);
+    NewDepositEvent(depositContract);
+    WithdrawalDepositEvent(depositContract);
+    AddToDepositEvent(depositContract);
+    NewLoanEvent(loanContract1);
+    SwapLoanEvent(partialLoanContract);
+    WithdrawPartialLoanDepositEvent(partialLoanContract);
+    RepaidLoanEvent(loanContract2);
+    AddCollateralEvent(partialLoanContract);
+    WithdrawCollateralEvent(partialLoanContract);
     // LiquidationEvent(liquidationContract)
 
     return app
@@ -138,6 +138,7 @@ const NewLoanEvent = (loanContract) => {
 
         try {
             logger.log('info', 'NewLoanEvent Called with : %s', JSON.stringify(event.returnValues))
+            console.log( 'NewLoanEvent Called with : %s', JSON.stringify(event.returnValues))
             await createNewUserAccount(event.returnValues.account)
             if (!error) {
                 console.log(event.returnValues)
