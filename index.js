@@ -27,7 +27,9 @@ const CORS_OPTIONS = {
             'https://testgql.hashstack.finance',
             `http://localhost:${PORT}`,
             'http://localhost:3000', 
-            'http://localhost:3001'
+            'http://localhost:3001',
+            'http://localhost:4000/graphql',
+            'https://studio.apollographql.com', //add graphql apollo studio to cors
           ],
   optionsSuccessStatus: 200,
   credentials: false
@@ -84,21 +86,24 @@ async function startApolloServer() {
   listenToEvents(app);
   
   const httpServer = http.createServer(app);
+  const corsOptions = { origin: "http://localhost:4000/graphql", credentials: true };
   const server = new ApolloServer({ 
+    // cors: corsOptions,
     typeDefs,
     resolvers, 
     plugins: [basicLogging, ApolloServerPluginDrainHttpServer({ httpServer })],
-    context: ({ req, res }) => {
-      // get the user token from the headers
-      const token = req.headers.authorization || '';
-      // try to retrieve a user with the token
+    // context: ({ req, res }) => {
+    //   // get the user token from the headers
+    //   const token = req.headers.authorization || '';
+    //   // try to retrieve a user with the token
       
-      const { payload: user, loggedIn } = getPayload(token);
-      // add the user to the context
-      return { user, loggedIn, res };
-    },
+    //   const { payload: user, loggedIn } = getPayload(token);
+    //   // add the user to the context
+    //   return { user, loggedIn, res };
+    // },
   });
   await server.start();
+  
   server.applyMiddleware({ app, path: "/graphql", cors: false });
 
   await new Promise(resolve => httpServer.listen({ port: PORT }, resolve));
