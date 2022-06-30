@@ -41,7 +41,6 @@ exports.createNewLoan = async (account, loanMarket, commitment, loanAmount, coll
                     })
                     .transacting(trx);
             });
-            console.log(loanData);
             logger.log('info', "createNewLoan Successfully Executed with transaction Hash:%s", transaction_hash);
         }
         else {
