@@ -180,6 +180,7 @@ const SwapLoanEvent = (libOpenContract) => {
             try {
                 await updateSwapLoanEventData(account, loanMarket, commitment, currentMarket, amount, isSwapped, transaction_hash);
                 logger.log('info', 'updateswaploandata success with : %s', JSON.stringify(event.returnValues))
+                console.log('info', 'updateswaploandata success with : %s', JSON.stringify(event.returnValues))
             } catch (error) {
                 console.error(error);
             }
