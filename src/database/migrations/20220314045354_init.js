@@ -58,10 +58,8 @@ exports.up = async function(knex) {
         table
         .integer('loan_status_id')
         .notNullable()
-        .references('loan_status_lookup.loan_status_id');
         table.string('account_address')
         .notNullable()
-        .references('accounts.address');
         table
         .integer('loan_liquidation_id')
         .notNullable();
