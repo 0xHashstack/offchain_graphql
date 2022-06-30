@@ -1,11 +1,12 @@
 const rpcURLs = {
     "infuraKovan": "https://kovan.infura.io/v3/99b8947af7e14278ae235bb21eb81f53",
     "infuraRopsten": "wss://ropsten.infura.io/ws/v3/84787fdf8ce842f0a2c41131de1ef5e9",
-    "binanceTestnet": "wss://ws-nd-400-266-190.p2pify.com/1efac602169fba8d5bf0589315ec436a"
+    "binanceTestnet": "wss://speedy-nodes-nyc.moralis.io/a61a52180976b08f4ff81c83/bsc/testnet/ws",
+    "localhost":"ws://127.0.0.1:8545/"
 }
 
-const diamondAddress = "0x12bdAC56C03FA27687c6f35E60fC36BecB00850e";
-
+const diamondAddress = "0xEF21dD8501a6Ca3502349cba86551657650eeEa7";
+//
 const chain = "0x61"
 
 const SUBGRAPH_RECONCILIATION_URL = "https://api.thegraph.com/subgraphs/name/sakrock007/reconciliation"

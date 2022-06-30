@@ -37,10 +37,9 @@ exports.ReconcilePastLoanDataInit = async () => {
                     }          
                 `,
             });
-
+  
             //BASED ON THE ACTION RECEIVED PERFORM THE APPROPRIATE ACTION
             let loan_past_data = loan_response_data.data.data.loans
-
             //length of the array - n
             let n = loan_past_data.length
             if (n < 1000) {
@@ -57,6 +56,7 @@ exports.ReconcilePastLoanDataInit = async () => {
                         // debt category event will be generated from the blockchain end!
                         let debtCategory = 1
                         const cdr = BigNumber(collateralAmount) / BigNumber(loanAmount);
+                        console.log(cdr)
                         if (cdr >= 1) {
                             debtCategory = 1;
                         } else if (cdr >= 0.5 && cdr < 1) {
@@ -64,7 +64,8 @@ exports.ReconcilePastLoanDataInit = async () => {
                         } else if (cdr >= 0.333 && cdr < 0.5) {
                             debtCategory = 3;
                         }
-                        createNewLoan(address, loanMarket, commitment, loanAmount, collateralMarket, collateralAmount, debtCategory, cdr, id)
+                        
+                        createNewLoan(address, loanMarket, commitment, loanAmount, collateralMarket, collateralAmount, debtCategory, cdr, id, count)
                         break;
                     }
                     case "SwappedLoan": {
@@ -73,28 +74,28 @@ exports.ReconcilePastLoanDataInit = async () => {
                         updateSwapLoanEventData(address, loanMarket, commitment, currentMarket, amount, isSwapped, id)
                         break;
                     }
-                    case "WithdrawLoan": {
-                        console.log("WithdrawPartial Loan Event Added via subgraph!", count)
-                        let { id, address, amount, market, commitment } = loan_past_data[i]
-                        createWithdrawalPartialLoan(address, amount, market, commitment, id)
-                        break;
-                    }
+                    // case "WithdrawLoan": {
+                    //     console.log("WithdrawPartial Loan Event Added via subgraph!", count)
+                    //     let { id, address, amount, market, commitment } = loan_past_data[i]
+                    //     createWithdrawalPartialLoan(address, amount, market, commitment, id)
+                    //     break;
+                    // }
                     case "LoanRepaid": {
                         console.log("LoanRepaid Event Added via subgraph!", count)
                         let { id, address, market, commitment, amount, repaidAmount } = loan_past_data[i]
                         loanRepaid(address, market, commitment, amount, repaidAmount, id)
                         break;
                     }
-                    case "AddCollateral": {
-                        console.log("AddCollateral Event Added via subgraph!", count)
-                        let { address, market, commitment, amount, id } = loan_past_data[i]
-                        createAddCollateralDeposit(address, market, commitment, amount, id)
-                        break;
-                    }
+                    // case "AddCollateral": {
+                    //     console.log("AddCollateral Event Added via subgraph!", count)
+                    //     let { address, market, commitment, amount, id } = loan_past_data[i]
+                    //     createAddCollateralDeposit(address, market, commitment, amount, id)
+                    //     break;
+                    // }
                     case "WithdrawCollateral": {
                         console.log("AddCollateral Event Added via subgraph!", count)
                         let { address, market, commitment, amount, id } = loan_past_data[i]
-                        createWithdrawCollateralDeposit(address, market, commitment, amount, id)
+                        //createWithdrawCollateralDeposit(address, market, commitment, amount, id)
                         break;
                     }
                     default: {
