@@ -13,7 +13,7 @@ const db = require('../src/database/db')
 const { ReconcilePastDepositDataInit, ReconcilePastLoanDataInit } = require('./reconcilation/index')
 
 const listenToEvents = (app) => {
-    const web3 = getWeb3();
+    const web3 = getWeb3();    
     let depositContract = new web3.eth.Contract(
         Deposit,
         diamondAddress
@@ -38,7 +38,7 @@ const listenToEvents = (app) => {
 
     // TO DO: Once CDR is fixed from blockchain side, uncomment this code
 
-    // ReconcilePastLoanDataInit();
+   // ReconcilePastLoanDataInit();
     // ReconcilePastDepositDataInit();
 
     NewDepositEvent(depositContract);
@@ -63,6 +63,7 @@ const NewDepositEvent = (depositContract) => {
     console.log("Listening to NewDeposit event");
     depositContract.events.NewDeposit({}, async (error, event) => {
         try {
+            console.log("******** NEW DEPOSIT EVENT ********")
             //createNewUserAccount(event.returnValues.account)
             if (!error) {
                 console.log("******** NEW DEPOSIT EVENT ********")
@@ -178,6 +179,7 @@ const SwapLoanEvent = (libOpenContract) => {
             const transaction_hash = event.transactionHash;
             try {
                 await updateSwapLoanEventData(account, loanMarket, commitment, currentMarket, amount, isSwapped, transaction_hash);
+                logger.log('info', 'updateswaploandata success with : %s', JSON.stringify(event.returnValues))
             } catch (error) {
                 console.error(error);
             }
@@ -199,7 +201,7 @@ const WithdrawPartialLoanDepositEvent = (loanContract) => {
 
                 const { account, amount, market, commitment } = event.returnValues;
                 const transaction_hash = event.transactionHash;
-                await createWithdrawalPartialLoan(account, amount, market, commitment, transaction_hash)
+                //await createWithdrawalPartialLoan(account, amount, market, commitment, transaction_hash)
             } else {
                 console.error(error);
             }
@@ -267,7 +269,7 @@ const WithdrawCollateralEvent = (partialLoanContract) => {
 
                 const { account, market, commitment, amount } = event.returnValues;
                 const transaction_hash = event.transactionHash;
-                await createWithdrawCollateralDeposit(account, market, commitment, amount, transaction_hash)
+                //await createWithdrawCollateralDeposit(account, market, commitment, amount, transaction_hash)
             } else {
                 console.error(error);
             }
